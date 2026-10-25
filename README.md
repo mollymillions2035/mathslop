@@ -4,6 +4,8 @@ Use it or don't.
 
 ![mathslop](docs/screenshot.png)
 
+Get it from the [Chrome Web Store](https://chromewebstore.google.com/detail/mathslop/hapemhbhhkmgcmhpiffngdiahpbfdfcj).
+
 Tests: `npm test` (the latest LTS Node, pinned in `mise.toml`, and Chromium, no dependencies; see "Tests" in `CLAUDE.md`).
 
 Dual licensed as MIT and WTFPL - see `LICENSE`.
