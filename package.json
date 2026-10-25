@@ -3,7 +3,7 @@
   "private": true,
   "description": "Tests for the mathslop extension. No dependencies; not shipped (scripts/package.sh copies only its allowlist).",
   "engines": {
-    "node": ">=22.8"
+    "node": ">=24"
   },
   "scripts": {
     "test": "npm run test:engine && npm run test:browser",

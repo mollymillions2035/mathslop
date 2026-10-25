@@ -19,13 +19,9 @@ Rough priority order.
       - A save that doesn't fit `chrome.storage.local` (10 MB) is an unhandled `kQuotaBytes` error from `store.save`,
         and the pad isn't saved.
       The engine fuzzer and the monkey test found nothing over several seeds.
-3. **Tests on the latest LTS Node in CI.** The tests workflow (PR #12) runs them on Node 22, the `engines`
-      minimum in package.json. Node is used only by the tests (the extension runs in Chrome, packaging is bash),
-      so no one is stuck on an old version: `node-version: 'lts/*'` would follow the newest LTS the way
-      `chrome@stable` follows Chrome, and `engines` could move up with it.
-4. **Plotting — possible future enhancement, not planned.** New `type: 'plot'` in sandbox.js using `compile()`
+3. **Plotting — possible future enhancement, not planned.** New `type: 'plot'` in sandbox.js using `compile()`
       to sample points, returning number arrays; draw on a `<canvas>` in the panel. The reason CE lives in the sandbox in the first place.
-5. **Units in equations (5 km + 300 m, km/h → m/s) — possible future enhancement, on hold** while deciding whether and how units should work at
+4. **Units in equations (5 km + 300 m, km/h → m/s) — possible future enhancement, on hold** while deciding whether and how units should work at
       all. A working attempt is on the local branch `units-experiment` (not pushed). What it found: CE 0.161 reads `5\,\mathrm{km}` and
       `5\text{km/h}` as `Quantity`, but MathLive's own unit shortcuts write `\operatorname{km}`, which CE reads as
       a variable; single-letter units (m, s, g, h) can't be told apart from variables while typing; CE's `\to`
@@ -54,7 +50,7 @@ background.js                         makes the toolbar icon open the side panel
 docs/screenshot.png                   used only by README.md; the extension never loads it
 store/ PRIVACY.md scripts/            Chrome Web Store listing, assets and packaging; not shipped (see "Publishing")
 CHANGELOG.md                          what changed in each version; not shipped
-test/ package.json                    the test suite (see "Tests"); not shipped, no dependencies
+test/ package.json mise.toml          the test suite (see "Tests"); not shipped, no dependencies
 ```
 
 **The rule:** anything that uses `eval`, `new Function`, or a library that does, goes in the sandbox.
@@ -236,7 +232,10 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
 
 ## Tests
 
-No dependencies: Node ≥ 22.8 (`node:test`, built-in coverage) and Chromium or Chrome for Testing. Branded
+No dependencies: the latest LTS Node (`node:test`, built-in coverage) and Chromium or Chrome for Testing.
+**Node is always the newest LTS**, locally and in CI: `mise.toml` says `node = "lts"`, mise switches to it in this
+folder, and CI reads the same file (`jdx/mise-action`). `engines` in package.json is the current LTS major; move it up
+when a new LTS comes out. A new LTS that breaks the tests is a critical bug, never a reason to pin the older Node. Branded
 Chrome no longer accepts `--load-extension`; those two do (`CHROMIUM=/path` picks the binary).
 
 ```
@@ -266,8 +265,9 @@ npm run fuzz          optional: engine fuzzing, hostile LaTeX, a monkey test, th
   the drivers leave realistic gaps.
 - **CI**: `.github/workflows/test.yml` runs `npm run coverage` and `npm run test:zip` on pushes to main, on
   pull requests and weekly, with the latest **stable** Chrome for Testing from `@puppeteer/browsers` (downloaded
-  on the runner, not a dependency). The target is always Chrome stable, because that's what users have (Chrome
-  updates itself): a red weekly run with no code change is a real compatibility bug, not CI noise. Schedules
+  on the runner, not a dependency) and the latest **LTS** Node from `mise.toml`. The target is always Chrome stable,
+  because that's what users have (Chrome updates itself): a red weekly run with no code change is a real
+  compatibility bug, not CI noise, and so is one after a new Node LTS (a critical one). Schedules
   only run from the default branch, and GitHub turns a public repo's scheduled workflows off after 60 days with
   no repository activity; then re-enable it from the Actions tab. `CHROMIUM_FLAGS` passes extra flags
   (`--no-sandbox` there), and `CHROMIUM_LOG=dir` keeps each browser's stderr.
