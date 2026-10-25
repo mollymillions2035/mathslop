@@ -51,6 +51,8 @@ mathslop is a scratchpad for writing math in Chrome's side panel, next to whatev
 
 New in 1.3.2:
 - mathslop is now public domain (CC0 1.0); it was MIT or WTFPL.
+- A pad too big to save now tells you, instead of quietly not saving.
+- Pasted LaTeX can no longer cover the panel; γ shows as γ in answers.
 
 Features:
 

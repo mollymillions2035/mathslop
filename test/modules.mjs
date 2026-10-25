@@ -111,6 +111,7 @@ export const PANEL = {
   mode: ['settings', 'hook'], angle: ['settings', 'via the Rad/Deg buttons'], places: ['settings', 'via the Decimals select'],
   order: ['settings', 'hook'], copyFmt: ['settings', 'via the Copy all dialog'], copyAns: ['settings', 'via the Copy all dialog'],
   persist: ['settings', 'via store after the debounce'],
+  saveFailed: ['settings', 'via the full-storage test'],
   // latex
   portable: ['latex', 'hook'], spoken: ['latex', 'hook'], isSum: ['latex', 'hook'], toText: ['latex', 'hook'],
   parseImport: ['latex', 'hook'], appendedLines: ['latex', 'hook'], answerParts: ['latex', 'hook'], exportText: ['latex', 'via the Copy all dialog'],

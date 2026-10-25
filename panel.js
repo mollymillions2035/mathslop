@@ -29,11 +29,12 @@
         return JSON.parse(localStorage.getItem(KEY) || 'null');
       } catch { return null; }
     },
+    // Resolves to false when the pad wasn't saved (chrome.storage.local holds 10 MB).
     save(o){
       try {
-        if (hasChromeStorage) chrome.storage.local.set({ [KEY]: o });
-        else localStorage.setItem(KEY, JSON.stringify(o));
-      } catch {}
+        if (hasChromeStorage) return chrome.storage.local.set({ [KEY]: o }).then(() => true, () => false);
+        localStorage.setItem(KEY, JSON.stringify(o)); return Promise.resolve(true);
+      } catch { return Promise.resolve(false); }
     }
   };
   const saved = await store.load();
@@ -130,8 +131,12 @@
   let order = saved?.order === 'decimal' ? 'decimal' : 'exact';
   let copyFmt = saved?.copyFmt === 'text' ? 'text' : 'latex';
   let copyAns = saved?.copyAns ?? true;
+  let saveFailed = false;   // said once per run of failed saves, not on every keystroke
   function persist(){
-    store.save({ lines: fields().map(f => f.value), mode, varColors, angle, places, order, copyFmt, copyAns });
+    store.save({ lines: fields().map(f => f.value), mode, varColors, angle, places, order, copyFmt, copyAns }).then(ok => {
+      if (!ok && !saveFailed) toast('The pad is too big to save — remove some lines');
+      saveFailed = !ok;
+    });
   }
 
   // ---------- toast ----------

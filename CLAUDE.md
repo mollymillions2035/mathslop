@@ -11,13 +11,9 @@ Rough priority order.
       migration from `v1` (see "Renaming / moving the folder").
 2. **Hostile-input and fuzz findings** (`npm run fuzz`, test/fuzz/; first runs on 1.3.0). Nothing ran, navigated or
       reached the network for any payload. Open:
-      - `\htmlStyle{position:fixed;inset:0;…}{x}` in a line covers the whole panel, header included, and
-        `position:absolute;top:-500px` moves a line's content out of its row (cosmetic: a pasted line can hide the UI).
       - 300 nested `\sqrt{…}` hang the panel itself (MathLive's rendering, > 60 s).
       - `\href{javascript:…}` and a 200 000-character line throw into the console (MathLive "Invalid URL", stack
         overflow); the panel survives both.
-      - A save that doesn't fit `chrome.storage.local` (10 MB) is an unhandled `kQuotaBytes` error from `store.save`,
-        and the pad isn't saved.
       The engine fuzzer and the monkey test found nothing over several seeds.
 3. **Plotting — possible future enhancement, not planned.** New `type: 'plot'` in sandbox.js using `compile()`
       to sample points, returning number arrays; draw on a `<canvas>` in the panel. The reason CE lives in the sandbox in the first place.
@@ -223,7 +219,8 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
   right-click menu on a line without the focus gets no keys (stock MathLive): Esc there would start a
   `\command` in the line, so the pad closes the menu by clicking its dismiss layer instead. panel.css hides and dims the line's ☰
   with `color`, not `opacity`: opacity makes the toggle a stacking context, which traps the full-panel layer
-  MathLive puts inside it to close the menu on a click elsewhere. `?` must stay typeable (it's a normal character in math), which is
+  MathLive puts inside it to close the menu on a click elsewhere. For the same reason the containment that keeps
+  `\htmlStyle{position:fixed…}` inside its line (`contain: paint`) is on `::part(content)`, never on the math-field. `?` must stay typeable (it's a normal character in math), which is
   why the guide is on Ctrl+/.
 - **No read-aloud.** MathLive's Ctrl+Alt+↑/↓ `speak` keybindings are removed in `makeRow`: they send the line
   to Chrome TTS, which may be an online voice, breaking "nothing leaves the device" in PRIVACY.md. People
@@ -234,6 +231,7 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
 - Theme: libadwaita dark only (GNOME). Fonts: Adwaita Sans / Adwaita Mono with fallbacks.
 - Storage: `chrome.storage.local`, key `mathslop.v1` → `{ lines, mode, varColors, angle, places, order,
   copyFmt, copyAns }`. Missing fields fall back to defaults, so older saved data still loads.
+  A save that doesn't fit (10 MB) shows a toast once per run of failed saves (`saveFailed`), not on every keystroke.
   Falls back to localStorage if panel.html is opened outside the extension.
 
 ## Tests

@@ -15,6 +15,7 @@ describe('norm and tidy', () => {
     ['3.05', '3.05'], ['3.0\\,1', '3.0\\,1'], ['30', '30'], ['0.50', '0.50'],
     ['1\\imaginaryI', '\\imaginaryI'], ['2+1\\imaginaryI', '2+\\imaginaryI'], ['2-1\\imaginaryI', '2-\\imaginaryI'],
     ['21\\imaginaryI', '21\\imaginaryI'],
+    ['2\\operatorname{EulerGamma}', '2\\gamma'], ['\\operatorname{EulerGamma}x', '\\gamma x'], ['\\operatorname{EulerGamma}^2', '\\gamma^2'],
   ]) test(`tidy ${i} → ${o}`, () => assert.equal(N.tidy(i), o));
 });
 

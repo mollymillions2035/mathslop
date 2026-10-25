@@ -12,6 +12,14 @@ store description (store/listing.md).
   WTFPL. `LICENSE-MIT` and `LICENSE-WTFPL` are gone; `COPYING` says what is covered. The libraries in
   `vendor/` keep their MIT licenses.
 
+### Fixed
+
+- A pad too big to save (Chrome keeps 10 MB per extension) now says so in a toast, once, instead of failing
+  silently with an error in the console.
+- A pasted line with `\htmlStyle{position:fixed;…}` or `{position:absolute;top:-500px}` can no longer cover
+  the panel or draw outside its own row.
+- Euler's constant shows as γ in answers, not as Compute Engine's name for it (2γ was "2EulerGamma").
+
 ## 1.3.1 (2026-10-25)
 
 ### Fixed

@@ -112,6 +112,9 @@ describe('numbers', () => rows(S, [
   ['\\sqrt{2^{2001}}', {}, ap(null, '1.515\\,342\\,004\\,482\\,324\\,461\\,53\\cdot10^{301}')],
   ['\\sqrt{2^{100001}}', {}, ap(null, '4.469\\,904\\,010\\,187\\,208\\,724\\,74\\cdot10^{15051}')],
   ['0^0', {}, A('\\operatorname{Indeterminate}', null)],         // NaN: no decimal
+  ['2\\gamma', { mode: 'arith', qa: 'r9-11' }, ap(null, '1.154\\,431\\,329\\,803\\,065\\,721\\,21')],   // 2γ repeats the line, not 2EulerGamma
+  ['\\gamma', {}, ap(null, '0.577\\,215\\,664\\,901\\,532\\,860\\,607')],
+  [['y\\coloneq3', '\\gamma y'], {}, { exact: '3\\gamma' }],
   ['e^{i\\pi}+1', {}, A('0', null)],
   ['\\frac{180}{\\pi}\\arcsin(0.5)', {}, ap(null, '30')],          // the exact form has a rounded float inside
   ['\\sqrt{2.5}x', {}, ap(null, '1.581\\,138\\,830\\,084\\,189\\,666x')],

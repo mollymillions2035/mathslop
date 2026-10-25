@@ -73,6 +73,16 @@ describe('inserting an answer', () => {
 });
 
 describe('each line field', () => {
+  test('a line\'s content is drawn only inside it: \\htmlStyle can\'t cover the panel', async t => {
+    const p = await panel(t, ctx, { lines: ['\\htmlStyle{position:fixed;inset:0;background:red}{x}', '\\htmlStyle{position:absolute;top:-500px}{y}'], mode: 'off' });
+    const got = await p.run(() => {
+      const h = document.querySelector('header').getBoundingClientRect(), add = document.querySelector('.add').getBoundingClientRect();
+      const at = r => document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2);
+      const content = [...document.querySelectorAll('.row math-field')].map(f => f.shadowRoot.querySelector('[part=content]'));
+      return { header: !!at(h)?.closest('header'), add: at(add)?.className, contain: getComputedStyle(content[0]).contain };
+    });
+    assert.deepEqual(got, { header: true, add: 'add', contain: 'paint' });
+  });
   test('MathLive\'s read-aloud and undo bindings are gone; ans is a shortcut; NO_SHORTCUT words are not', async t => {
     const p = await panel(t, ctx, { lines: ['1'], mode: 'off' }, { hook: true });
     const got = await p.run(S => {

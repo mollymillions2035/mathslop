@@ -815,7 +815,7 @@ verifier could not reproduce are marked "not reproduced" and need no test.
 
 - Severity: low · source: retest:fixes
 - Found: γ:=1.5 and φ(\varphi):=… are refused with "Only a letter (x := 5) … can be given a value", though both are letters; e, i and π get the same tip. 1.2.0 silently ignored γ:=1.5. In Arithmetic, 2γ shows '= 2EulerGamma ≈ 1.154…', with Compute Engine's internal name EulerGamma written out instead of γ; 1.2.0 shows the same. A physics student using γ for a Lorentz factor gets a refusal whose tip contradicts itself.
-- Test: todo: known open issue (EulerGamma display); test/engine/assign.test.mjs › refused (γ, φ as \varphi)
+- Test: test/engine/lines.test.mjs › numbers (2\gamma); test/engine/assign.test.mjs › refused (γ, φ as \varphi)
 
 ## Final check (wf_e63cee2e-92f)
 

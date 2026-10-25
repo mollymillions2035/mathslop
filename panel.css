@@ -60,6 +60,8 @@ math-field{display:block;width:100%;box-sizing:border-box;background:transparent
   --primary-color:var(--accent);--text-font-family:var(--sans);
   --placeholder-color:var(--dim);--placeholder-opacity:.6}
 math-field:focus-within{outline:0}
+/* A pasted \htmlStyle{position:fixed…} or {position:absolute;top:-500px} stays inside its line instead of covering the panel. */
+math-field::part(content){contain:paint}
 math-field::part(virtual-keyboard-toggle){display:none}
 /* Hidden and dimmed with color, not opacity: opacity would make the toggle a stacking context and trap
    the full-panel layer MathLive puts inside it to close its menu on a click elsewhere. */

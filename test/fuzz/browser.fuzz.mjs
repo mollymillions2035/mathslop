@@ -28,7 +28,8 @@ async function open(saved){
   if (saved !== undefined) { await storage(p, 'set', saved); p.since = p.log.length; await p.reload(); await p.ready(); }
   return p;
 }
-// Every element of a line (in its math-field's shadow root and its answer) is drawn inside the line, and
+// Every element of a line (in its math-field's shadow root and its answer) is drawn inside the line (where it's
+// drawn at all), and
 // nothing covers the header; ids are unique.
 const layout = p => p.run(() => {
   const bad = [], head = document.querySelector('header').getBoundingClientRect();
@@ -36,9 +37,12 @@ const layout = p => p.run(() => {
     const box = row.getBoundingClientRect();
     const els = [...row.querySelector('math-field').shadowRoot.querySelectorAll('*'), ...row.querySelectorAll('.res *')];
     for (const el of els) {
-      const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
+      // panel.css paints a line's content only inside its [part=content] (contain: paint): measure what's left
+      const b = el.getBoundingClientRect(), c = el.closest('[part=content]')?.getBoundingClientRect() ?? b;
+      const r = { top: Math.max(b.top, c.top), bottom: Math.min(b.bottom, c.bottom), left: Math.max(b.left, c.left), right: Math.min(b.right, c.right) };
+      if (r.bottom - r.top <= 0 || r.right - r.left <= 0) continue;
       const pos = getComputedStyle(el).position;
-      if (pos === 'fixed' || r.top < box.top - 4 || r.bottom > box.bottom + 4) bad.push({ line: row.querySelector('.num').textContent, tag: el.tagName, cls: String(el.className).slice(0, 40), pos, top: Math.round(r.top), bottom: Math.round(r.bottom), row: [Math.round(box.top), Math.round(box.bottom)] });
+      if (r.top < box.top - 4 || r.bottom > box.bottom + 4) bad.push({ line: row.querySelector('.num').textContent, tag: el.tagName, cls: String(el.className).slice(0, 40), pos, top: Math.round(r.top), bottom: Math.round(r.bottom), row: [Math.round(box.top), Math.round(box.bottom)] });
       if (r.bottom > head.top && r.top < head.bottom && pos === 'fixed') bad.push({ overHeader: true, tag: el.tagName });
     }
   }
@@ -162,11 +166,12 @@ async function quota(){
   await p.type('2'.repeat(10)); await sleep(150);
   await p.run(() => { const f = document.querySelector('.row math-field'); f.setValue('1'.repeat(5000)); f.dispatchEvent(new Event('input', { bubbles: true })); });
   await sleep(600);
+  const said = await toastText(p);
   const errs = p.errors({ since });
   const saved = await storage(p, 'get');
   console.log(`quota: ${q} bytes; after a save that doesn't fit: console errors ${errs.length}, saved line length ${saved?.lines?.[0]?.length}`);
   if (errs.length) find('a failed save is an unhandled error', { errors: errs.map(e => e.text.slice(0, 200)) });
-  if (!errs.length && saved?.lines?.[0]?.length !== 5000) find('a failed save is silent', { savedLength: saved?.lines?.[0]?.length });
+  if (!errs.length && saved?.lines?.[0]?.length !== 5000 && !/too big to save/.test(said)) find('a failed save is silent', { savedLength: saved?.lines?.[0]?.length, toast: said });
   await p.run(() => new Promise(res => chrome.storage.local.remove('filler', res)));
   await p.close();
 }

@@ -3,7 +3,7 @@ import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { useBrowser, panel, values, savedState, clickLine, sleep } from './fixture.mjs';
+import { useBrowser, panel, values, savedState, toastText, clickLine, sleep } from './fixture.mjs';
 import { ROOT } from './cdp.mjs';
 
 const ctx = useBrowser();
@@ -21,6 +21,22 @@ describe('saving', () => {
     const p = await panel(t, ctx, { lines: ['1'], mode: 'off' });
     await clickLine(p, 0); await p.type('2'); await sleep(400);
     assert.deepEqual(await savedState(p), { lines: ['12'], mode: 'off', varColors: false, angle: 'rad', places: 'auto', order: 'exact', copyFmt: 'latex', copyAns: true });
+  });
+  test('a save that doesn\'t fit says so once, with no console error, until a save works again', async t => {
+    const p = await panel(t, ctx, { lines: ['1'], mode: 'off' });
+    const q = await p.eval('chrome.storage.local.QUOTA_BYTES');
+    await p.run((S, n) => chrome.storage.local.set({ filler: 'x'.repeat(n) }), q - 2000);
+    try {
+      const big = () => p.run((S, n) => { const f = document.querySelector('.row math-field'); f.setValue('1'.repeat(n)); f.dispatchEvent(new Event('input', { bubbles: true })); }, 5000);
+      await big(); await sleep(400);
+      assert.equal(await toastText(p), 'The pad is too big to save — remove some lines');
+      assert.equal((await savedState(p)).lines[0], '1');
+      await sleep(1800); await clickLine(p, 0); await p.type('2'); await sleep(400);
+      assert.equal(await toastText(p), '', 'not again while saves keep failing');
+      await p.run(() => chrome.storage.local.remove('filler'));
+      await clickLine(p, 0); await p.type('3'); await sleep(400);
+      assert.equal((await savedState(p)).lines[0].length, 5002);
+    } finally { await p.run(() => chrome.storage.local.remove('filler')); }
   });
 });
 
