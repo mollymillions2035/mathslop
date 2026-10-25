@@ -270,7 +270,8 @@ npm run fuzz          optional: engine fuzzing, hostile LaTeX, a monkey test, th
   Trusted keys sent less than ~60 ms after Enter or Backspace can land in the wrong line (a known issue), so
   the drivers leave realistic gaps.
 - **CI**: `.github/workflows/test.yml` runs `npm run coverage` and `npm run test:zip` on pushes to main, on
-  pull requests and weekly, with the latest **stable** Chrome for Testing from `@puppeteer/browsers` (downloaded
+  pull requests and weekly (not when a push or PR changes only `*.md`, `store/` or `docs/`; a newer push to a PR
+  cancels the older run), with the latest **stable** Chrome for Testing from `@puppeteer/browsers` (downloaded
   on the runner, not a dependency) and the latest **LTS** Node from `mise.toml`. The target is always Chrome stable,
   because that's what users have (Chrome updates itself): a red weekly run with no code change is a real
   compatibility bug, not CI noise, and so is one after a new Node LTS (a critical one). Schedules
