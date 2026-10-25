@@ -23,6 +23,9 @@ Rough priority order.
       a variable; single-letter units (m, s, g, h) can't be told apart from variables while typing; CE's `\to`
       doesn't convert (`\operatorname{UnitConvert}` does); exact unit answers come out as siunitx `\qty[…]`,
       which MathLive can't render; and unit names count as unknowns, so Arithmetic skips unit lines.
+5. **Light mode.** The theme is libadwaita dark only (see "Behaviour decisions" → Theme). Add a light theme
+      (libadwaita light palette), following `prefers-color-scheme` by default; the letter colors and MathLive's
+      styling need light-background variants too.
 
 ## Load it
 
