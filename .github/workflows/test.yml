@@ -1,14 +1,21 @@
 # Runs the test suite (CLAUDE.md "Tests") on pushes and pull requests. Nothing here is shipped.
 name: tests
 on:
+  # Changes only to docs and the store listing don't run it: none of those files is shipped or tested.
   push:
     branches: [main]
+    paths-ignore: ['**.md', 'store/**', 'docs/**']
   pull_request:
+    paths-ignore: ['**.md', 'store/**', 'docs/**']
   workflow_dispatch:
   schedule:
     - cron: '17 6 * * 1'   # Mondays 06:17 UTC: each new Chrome stable gets tested even with no commits
 permissions:
   contents: read
+# A newer push to the same PR cancels the run for the older one. Runs on main are never cancelled.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   test:
     runs-on: ubuntu-latest
