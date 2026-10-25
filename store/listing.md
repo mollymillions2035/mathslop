@@ -13,7 +13,8 @@ from manifest.json and can't be edited in the dashboard; change them there and r
    instructions (re-count: max 500 characters), and the library versions in the reviewer reply.
 4. Put the upload date on the CHANGELOG.md entry, keep PRIVACY.md true, and merge the release to `main`
    before you submit it for review: the privacy policy URL points at PRIVACY.md on `main`.
-5. Run `scripts/package.sh` and upload `dist/mathslop-<version>.zip` (Package tab). Paste every field below
+5. Run `scripts/package.sh --crx` and upload `dist/mathslop-<version>.crx` (Package tab; Verified CRX Uploads
+   is on, so a zip is refused). The zip goes on the GitHub release. Paste every field below
    that changed since the last upload (`git diff <last release tag> -- store/listing.md`), replace changed
    screenshots, then submit for review.
 
@@ -30,6 +31,13 @@ icons/  vendor/  LICENSE  COPYING
 It leaves out `.git/`, `docs/`, `store/`, `scripts/`, `dist/`, `CLAUDE.md`, `CHANGELOG.md`, `README.md` and
 `PRIVACY.md` (none of them are loaded by the extension). Rebuild after every manifest or code change. Every upload needs a higher
 `version` than the last one.
+
+**Verified CRX Uploads** (Package tab, on since 1.3.2): every upload must be a CRX signed with our private key.
+`scripts/package.sh --crx` signs the same files as the zip with `~/.config/mathslop/crx-key.pem` (or
+`$MATHSLOP_CRX_KEY`, or `--crx PATH`) and checks the result. The private key lives in Bitwarden ("mathslop CRX
+signing key") and never in the repo or a Google account; restore it from there to that path on a new machine.
+The public half, which is what the dashboard has, is `store/crx-key.pub.pem`, and package.sh refuses any other
+key. If the private key is lost, Chrome Web Store support can replace it, which takes up to a week.
 
 ## Store listing tab
 

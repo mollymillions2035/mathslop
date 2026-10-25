@@ -9,12 +9,17 @@
 # Usage: scripts/package.sh                 dist/mathslop-<version>.zip  (runnable from any directory)
 #        scripts/package.sh --suffix tests  dist/mathslop-<version>-tests.zip, for test builds
 #                                           (or ZIP_SUFFIX=tests); the contents are the same either way
+#        scripts/package.sh --crx [KEY]     also dist/mathslop-<version>.crx, the same files signed with KEY
+#                                           (default $MATHSLOP_CRX_KEY, else ~/.config/mathslop/crx-key.pem):
+#                                           what the store takes since it has Verified CRX Uploads on.
+#                                           Needs Chromium or Chrome ($CHROMIUM picks the binary).
 set -euo pipefail
 
-SUFFIX="${ZIP_SUFFIX:-}"
+SUFFIX="${ZIP_SUFFIX:-}" CRX_KEY=""
 while (( $# )); do
   case "$1" in
     --suffix) [[ $# -ge 2 ]] || { echo "package.sh: error: --suffix needs a name" >&2; exit 1; }; SUFFIX="$2"; shift 2 ;;
+    --crx) if [[ $# -ge 2 && "$2" != --* ]]; then CRX_KEY="$2"; shift; else CRX_KEY="${MATHSLOP_CRX_KEY:-$HOME/.config/mathslop/crx-key.pem}"; fi; shift ;;
     *) echo "package.sh: error: unknown argument: $1" >&2; exit 1 ;;
   esac
 done
@@ -28,6 +33,20 @@ die() { echo "package.sh: error: $*" >&2; exit 1; }
 command -v python3 >/dev/null || die "python3 is required"
 command -v zip >/dev/null     || die "zip is required"
 [[ -f manifest.json ]]        || die "manifest.json not found in $ROOT"
+if [[ -n "$CRX_KEY" ]]; then
+  [[ -f "$CRX_KEY" ]] || die "CRX signing key not found: $CRX_KEY (the private key is kept in Bitwarden, not in the repo)"
+  command -v openssl >/dev/null || die "openssl is required for --crx"
+  # store/crx-key.pub.pem is the key the dashboard has: a different key would be refused on upload.
+  [[ "$(openssl rsa -in "$CRX_KEY" -pubout 2>/dev/null)" == "$(cat store/crx-key.pub.pem)" ]] \
+    || die "$CRX_KEY is not the key in store/crx-key.pub.pem (the one the store has)"
+  CHROME="${CHROMIUM:-}"
+  if [[ -z "$CHROME" ]]; then
+    # The real binary, not Arch's launcher, which adds the flags from ~/.config/chromium-flags.conf.
+    for c in /usr/lib/chromium/chromium /usr/lib/chromium-browser/chromium-browser; do [[ -x "$c" ]] && { CHROME="$c"; break; }; done
+    [[ -n "$CHROME" ]] || CHROME="$(command -v chromium || command -v chromium-browser || command -v google-chrome || true)"
+  fi
+  [[ -n "$CHROME" ]] || die "--crx needs Chromium or Chrome: install one or set CHROMIUM=/path"
+fi
 
 VERSION="$(python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' manifest.json)"
 # Chrome: 1-4 dot-separated integers, each 0-65535, no leading zeros.
@@ -132,7 +151,7 @@ DIST="$ROOT/dist"
 OUT="$DIST/mathslop-$VERSION${SUFFIX:+-$SUFFIX}.zip"
 mkdir -p "$DIST"
 STAGE="$(mktemp -d "${TMPDIR:-/tmp}/mathslop-pkg.XXXXXX")"
-trap 'rm -rf "$STAGE"' EXIT
+trap 'rm -rf "$STAGE" "$STAGE.crx" "$STAGE-profile" "$STAGE-pub.der"' EXIT
 
 for f in "${FILES[@]}"; do
   mkdir -p "$STAGE/$(dirname "$f")"
@@ -173,3 +192,32 @@ SIZE="$(stat -c %s "$OUT" 2>/dev/null || stat -f %z "$OUT")"
 COUNT="${#FILES[@]}"
 echo "Built $OUT"
 echo "  version $VERSION, $COUNT files, $SIZE bytes ($(( (SIZE + 1023) / 1024 )) KiB)"
+
+# ---- signed CRX (--crx) ----
+[[ -n "$CRX_KEY" ]] || exit 0
+CRX="${OUT%.zip}.crx"
+rm -f "$CRX"
+# Chrome packs the directory into $STAGE.crx and exits; a throwaway profile keeps it off the user's own.
+"$CHROME" --headless=new --no-first-run --user-data-dir="$STAGE-profile" \
+  --pack-extension="$STAGE" --pack-extension-key="$CRX_KEY" >/dev/null 2>&1 || true
+[[ -f "$STAGE.crx" ]] || die "Chrome didn't pack the CRX ($CHROME)"
+mv "$STAGE.crx" "$CRX"
+
+# Check it: CRX3, signed by this key, and holding exactly the files of the zip.
+openssl rsa -in "$CRX_KEY" -pubout -outform DER -out "$STAGE-pub.der" 2>/dev/null || die "can't read the key $CRX_KEY"
+python3 -I - "$CRX" "$OUT" "$STAGE-pub.der" <<'PY'
+import io, struct, sys, zipfile
+crx, out, pub = sys.argv[1], sys.argv[2], open(sys.argv[3], 'rb').read()
+data = open(crx, 'rb').read()
+if data[:4] != b'Cr24' or struct.unpack('<I', data[4:8])[0] != 3:
+    sys.exit("package.sh: the CRX isn't a CRX3 file")
+n = struct.unpack('<I', data[8:12])[0]
+if not pub or pub not in data[12:12 + n]:
+    sys.exit("package.sh: the CRX isn't signed with the given key")
+names = lambda z: sorted(i for i in z.namelist() if not i.endswith('/'))
+if names(zipfile.ZipFile(io.BytesIO(data[12 + n:]))) != names(zipfile.ZipFile(out)):
+    sys.exit("package.sh: the CRX holds different files from the zip")
+PY
+CSIZE="$(stat -c %s "$CRX" 2>/dev/null || stat -f %z "$CRX")"
+echo "Built $CRX"
+echo "  signed with $CRX_KEY, $CSIZE bytes ($(( (CSIZE + 1023) / 1024 )) KiB)"

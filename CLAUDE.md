@@ -44,7 +44,7 @@ vendor/compute-engine/                Compute Engine (UMD build), loaded only by
 vendor/mathlive/                      MathLive + its fonts/static CSS, loaded only by panel.html
 background.js                         makes the toolbar icon open the side panel
 docs/screenshot.png                   used only by README.md; the extension never loads it
-store/ PRIVACY.md scripts/            Chrome Web Store listing, assets and packaging; not shipped (see "Publishing")
+store/ PRIVACY.md scripts/            Chrome Web Store listing, assets, CRX public key and packaging; not shipped (see "Publishing")
 CHANGELOG.md                          what changed in each version; not shipped
 test/ package.json mise.toml          the test suite (see "Tests"); not shipped, no dependencies
 ```
@@ -294,7 +294,8 @@ npm run fuzz          optional: engine fuzzing, hostile LaTeX, a monkey test, th
 ## Publishing (Chrome Web Store)
 
 - `scripts/package.sh` builds `dist/mathslop-<version>.zip` (gitignored) from an allowlist of runtime files
-  (`--suffix tests` writes `dist/mathslop-<version>-tests.zip` instead, same contents).
+  (`--suffix tests` writes `dist/mathslop-<version>-tests.zip` instead, same contents; `--crx` also writes the
+  signed `.crx` the store takes).
   It fails if a file referenced by manifest.json, the HTML or CSS is missing, or if a shipped file other than a
   license is referenced by none of them. A new top-level runtime file must be added to `TOP_FILES` *and* be
   referenced from manifest.json, an HTML page or a CSS file (references from JS aren't checked); files under
@@ -314,6 +315,10 @@ npm run fuzz          optional: engine fuzzing, hostile LaTeX, a monkey test, th
   lightly.
 - `icons/icon128.png` has 16 px transparent padding (96 px artwork), as the store asks; 16/32/48 stay full-bleed.
 - Every upload needs a higher `version` than the last one uploaded.
+- **Verified CRX Uploads** are on (since 1.3.2): the store takes only `dist/mathslop-<version>.crx` from
+  `scripts/package.sh --crx`, signed with the private key in `~/.config/mathslop/crx-key.pem` (backed up in the
+  user's Bitwarden; never commit it, `*.pem` is gitignored). The public half is `store/crx-key.pub.pem`. Details
+  in store/listing.md, "Package". GitHub releases still get the zip.
 
 ## Vendored versions
 
