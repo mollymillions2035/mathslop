@@ -197,14 +197,16 @@
   // keys. Rebuilding the pad while it's open breaks it for the session, so the pad's shortcuts wait.
   // After setValue, MathLive still holds the keys typed before it for its inline shortcuts (xx → ×, pi → π):
   // the next key that completes one rolls the line back to before the change. A caret move flushes them.
-  // After the ans shortcut, MathLive types * (and what follows) in the same upright style: \mathrm{ans\cdot2},
-  // which reads as one word. Move it back out, keeping the caret where it is.
+  // After an upright name (the ans shortcut, or \mathrm{mass} typed in LaTeX mode), MathLive types * or ^
+  // (and what follows) in the same upright style: \mathrm{ans\cdot2}, which reads as one word. Move it back
+  // out, keeping the caret where it is.
   function ansOut(mf){
-    let v = mf.value, i, changed = false;
-    while ((i = v.search(/\\mathrm\{ans[^}]/)) >= 0) {
-      let j = i + 11, depth = 1;                          // just after "\mathrm{ans"
+    let v = mf.value, m, changed = false;
+    while ((m = /\\mathrm\{[a-zA-Z]+(?=[^a-zA-Z}])/.exec(v))) {
+      const i = m.index + m[0].length;                    // just after the name's letters
+      let j = i, depth = 1;
       for (; j < v.length && depth; j++) { if (v[j] === '{') depth++; else if (v[j] === '}') depth--; }
-      v = v.slice(0, i) + '\\mathrm{ans}' + v.slice(i + 11, j - 1) + v.slice(j); changed = true;
+      v = v.slice(0, i) + '}' + v.slice(i, j - 1) + v.slice(j); changed = true;
     }
     if (!changed) return;
     const pos = mf.position;
@@ -633,13 +635,11 @@
   bKbd.addEventListener('click', () => {
     const vk = window.mathVirtualKeyboard; if (!vk) return;
     const show = !vk.visible;
-    if (show) {
-      // The line the focus came straight from (clicked, or Tabbed into), else the line last edited.
-      const f = kbdFrom?.isConnected ? kbdFrom : lastField?.isConnected ? lastField : fields().at(-1);
-      const caret = f.caretBeforeTab; f.focus(); if (caret) { f.selection = caret; f.caretBeforeTab = null; }
-      vk.show();
-    }
-    else vk.hide();
+    // The line the focus came straight from (clicked, or Tabbed into), else the line last edited. Hiding
+    // goes back there too, so the next keys typed aren't lost on the button.
+    const f = kbdFrom?.isConnected ? kbdFrom : lastField?.isConnected ? lastField : fields().at(-1);
+    const caret = f.caretBeforeTab; f.focus(); if (caret) { f.selection = caret; f.caretBeforeTab = null; }
+    if (show) vk.show(); else vk.hide();
     bKbd.setAttribute('aria-pressed', show);
   });
   window.mathVirtualKeyboard?.addEventListener('geometrychange', () => {
@@ -684,7 +684,22 @@
 
   const dlg = $('dlg'), imp = $('imp');
   const parseImport = s => s.replace(/\r/g, '').split(/\n|\\\\/).map(x => x.trim()).filter(Boolean);
-  menuAction('btn-import', () => { if (menuBlocks()) return; imp.value = fields().map(f => f.value).filter(Boolean).join('\n'); dlg.showModal(); imp.select(); });
+  // The box opens with the pad in it, all selected, so a paste replaces it. If the pad is still in the box
+  // when Append is pressed (the box was clicked into before pasting), only what isn't the pad is appended:
+  // the lines that differ between the pad's lines kept at the start and those kept at the end.
+  const appendedLines = (pad, box) => {
+    let a = 0, b = 0;
+    while (a < pad.length && a < box.length && pad[a] === box[a]) a++;
+    while (b < pad.length - a && b < box.length - a && pad.at(-1 - b) === box.at(-1 - b)) b++;
+    return box.slice(a, box.length - b);
+  };
+  let prefilled = false;   // the pad put in the box is still there, not replaced as a whole
+  menuAction('btn-import', () => {
+    if (menuBlocks()) return;
+    imp.value = fields().map(f => f.value).filter(Boolean).join('\n'); prefilled = !!imp.value;
+    dlg.showModal(); imp.select();
+  });
+  imp.addEventListener('beforeinput', () => { if (imp.selectionStart === 0 && imp.selectionEnd === imp.value.length) prefilled = false; });
   $('imp-cancel').addEventListener('click', () => dlg.close());
   // The dialog closes before the pad is rebuilt: new math fields made under an open modal dialog
   // could end up unable to take typed text.
@@ -695,7 +710,8 @@
   });
   $('imp-append').addEventListener('click', () => {
     if (menuBlocks()) return;
-    const lines = fields().map(f => f.value).filter(Boolean).concat(parseImport(imp.value)); dlg.close();
+    const pad = fields().map(f => f.value).filter(Boolean), box = parseImport(imp.value);
+    const lines = pad.concat(prefilled ? appendedLines(pad, box) : box); dlg.close();
     undoToast('Lines appended', 'Pad restored', hist.change(() => setLines(lines)));
   });
 
@@ -824,7 +840,7 @@
 
   // Tests only (test/browser/cdp.mjs defines this global before panel.js runs; nothing in the extension does).
   if (globalThis.__mathslopTest) globalThis.__mathslopTest.panel = { KEY, SAMPLE, PLACES, store, portable, spoken, isSum,
-    toText, parseImport, answerParts, prettyLatex, prettyCap, spokenKey, colorFor, hist, WATCHDOG_MS, inflight, slowKeys,
+    toText, parseImport, appendedLines, answerParts, prettyLatex, prettyCap, spokenKey, colorFor, hist, WATCHDOG_MS, inflight, slowKeys,
     lineKey, lineResult, INVALID_TIP, SLOW_TIP, MODIFIERS, NO_SHORTCUT, ansOut,
     get mode(){ return mode; }, get order(){ return order; }, get engine(){ return engine; }, get reqId(){ return reqId; },
     get lastField(){ return lastField; }, get pendingRow(){ return pendingRow; } };

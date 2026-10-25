@@ -32,6 +32,13 @@ export const PARSE_IMPORT = [
   ['a\nb', ['a', 'b']], ['a\r\nb', ['a', 'b']], ['a\\\\b', ['a', 'b']], ['  a  \n\n  b ', ['a', 'b']], ['', []], ['\\\\\\\\', []],
 ];
 
+// appendedLines(pad, box) → the lines Append adds while the pad is still in the Import box (r9-9)
+export const APPENDED_LINES = [
+  [['1'], ['1', '2'], ['2']], [['1', '3'], ['1', '2', '3'], ['2']], [['1'], ['0', '1'], ['0']],
+  [['1', '2'], ['1', '2'], []], [['1', '2'], ['1', 'x', 'y', '2'], ['x', 'y']], [['a', 'a'], ['a', 'a', 'a'], ['a']],
+  [['1', '2'], ['1', '5'], ['5']], [['1'], [], []],
+];
+
 // answerParts(res, order) → [{ rel, latex, group }]
 export const ANSWER_PARTS = [
   [null, 'exact', []], [{ invalid: 'missing' }, 'exact', []], [{ slow: true }, 'exact', []],

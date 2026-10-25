@@ -112,7 +112,7 @@ export const PANEL = {
   persist: ['settings', 'via store after the debounce'],
   // latex
   portable: ['latex', 'hook'], spoken: ['latex', 'hook'], isSum: ['latex', 'hook'], toText: ['latex', 'hook'],
-  parseImport: ['latex', 'hook'], answerParts: ['latex', 'hook'], exportText: ['latex', 'via the Copy all dialog'],
+  parseImport: ['latex', 'hook'], appendedLines: ['latex', 'hook'], answerParts: ['latex', 'hook'], exportText: ['latex', 'via the Copy all dialog'],
   // keycaps
   prettyLatex: ['keycaps', 'hook'], prettyCap: ['keycaps', 'hook'], spokenKey: ['keycaps', 'hook'],
   // colors
@@ -151,7 +151,7 @@ export const PANEL = {
   setAngle: ['controls', 'via Rad/Deg'], bCol: ['controls', 'via Colors'], setColors: ['controls', 'via Colors'], bKbd: ['controls', 'via Keyboard'],
   kbdFrom: ['controls', 'via Keyboard'], menu: ['controls', 'via ☰'], bMenu: ['controls', 'via ☰'], openMenu: ['controls', 'via ☰'],
   menuAction: ['controls', 'via the ☰ menu'], clearAll: ['controls', 'via Clear pad / Esc Esc'], keysDlg: ['controls', 'via Ctrl+/'],
-  dlg: ['controls', 'via Import'], imp: ['controls', 'via Import'], expDlg: ['controls', 'via Copy all'], expText: ['controls', 'via Copy all'],
+  dlg: ['controls', 'via Import'], imp: ['controls', 'via Import'], prefilled: ['controls', 'via Import'], expDlg: ['controls', 'via Copy all'], expText: ['controls', 'via Copy all'],
   expAns: ['controls', 'via Copy all'], fmtBtns: ['controls', 'via Copy all'], renderExport: ['controls', 'via Copy all'],
   undoRedo: ['controls', 'via Ctrl+Z'], vkSwallow: ['controls', 'via the on-screen ↵'], vkPress: ['controls', 'via the on-screen ↵'],
   vkKey: ['controls', 'via the on-screen ↵'], escArmed: ['controls', 'via Esc Esc'], menuEscAt: ['controls', 'via Esc in a line menu'],

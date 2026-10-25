@@ -42,10 +42,15 @@ describe('inserting an answer', () => {
     await clickAnswer(p, 0); await sleep(200);
     assert.deepEqual(await values(p), ['1+1', 'x2y']);
   });
-  test('an upright name keeps what is typed after it outside', { todo: 'r9-7: \\mathrm{word} absorbs a following · or ^' }, async t => {
+  test('an upright name keeps what is typed after it outside', async t => {
     const p = await panel(t, ctx, { lines: [''], mode: 'off' });
     await clickLine(p, 0); await p.type('\\mathrm{mass}'); await p.key('Escape'); await p.type('*4'); await sleep(100);   // the QA repro
     assert.equal((await values(p))[0], '\\mathrm{mass}\\cdot4');
+  });
+  test('an upright name keeps a ^ typed after it outside too', async t => {
+    const p = await panel(t, ctx, { lines: [''], mode: 'off' });
+    await clickLine(p, 0); await p.type('\\mathrm{mass}'); await p.key('Escape'); await p.type('^2'); await sleep(100);
+    assert.match((await values(p))[0], /^\\mathrm\{mass\}\^\{?2\}?$/);
   });
   test('a click on a line\'s padding doesn\'t count; the line keeps no focus', async t => {
     const p = await panel(t, ctx, { lines: ['1+2', 'x'], mode: 'arith' });
@@ -93,6 +98,17 @@ describe('each line field', () => {
       return [a, f.value];
     });
     assert.deepEqual(got, ['\\mathrm{ans}\\cdot2+\\mathrm{ans}{x}', '\\mathrm{ans}+1']);
+  });
+  test('ansOut does the same for any upright name, and leaves whole names alone (r9-7)', async t => {
+    const p = await panel(t, ctx, { lines: [''], mode: 'off' }, { hook: true });
+    const ins = ['\\mathrm{mass\\cdot4}', '\\mathrm{mass^{2}}', '\\frac12\\mathrm{mass\\cdot\\mathrm{speed^2}}',
+      '\\mathrm{mass}+1', '2\\cdot\\mathrm{mass}', '\\mathrm{d}x', '\\mathrm{\\alpha}'];
+    const got = await p.run((S, ins) => ins.map(v => {
+      const f = document.querySelector('.row math-field');
+      f.setValue(v, { silenceNotifications: true }); S.pad.ansOut(f); return f.value;
+    }), ins);
+    assert.deepEqual(got, ['\\mathrm{mass}\\cdot4', '\\mathrm{mass}^{2}', '\\frac12\\mathrm{mass}\\cdot\\mathrm{speed}^2',
+      '\\mathrm{mass}+1', '2\\cdot\\mathrm{mass}', '\\mathrm{d}x', '\\mathrm{\\alpha}']);
   });
   test('without MathLive the panel says so and stops', async () => {
     const p = await ctx.b.openPanel({ hook: false,

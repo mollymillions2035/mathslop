@@ -2,7 +2,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { useBrowser, sharedPanel } from './fixture.mjs';
-import { TO_TEXT, PORTABLE, SPOKEN, IS_SUM, PARSE_IMPORT, ANSWER_PARTS } from '../cases/latex.mjs';
+import { TO_TEXT, PORTABLE, SPOKEN, IS_SUM, PARSE_IMPORT, APPENDED_LINES, ANSWER_PARTS } from '../cases/latex.mjs';
 import { PRETTY_LATEX, PRETTY_CAP, COLOR_PALETTE } from '../cases/keycaps.mjs';
 
 const ctx = useBrowser(), sp = sharedPanel(ctx);
@@ -19,6 +19,10 @@ describe('latex', () => {
   check('latex', 'spoken', SPOKEN);
   check('latex', 'isSum', IS_SUM);
   check('latex', 'parseImport', PARSE_IMPORT);
+  test(`appendedLines (${APPENDED_LINES.length} rows)`, async () => {
+    const got = await sp.p.run((S, rows) => rows.map(([pad, box]) => S.latex.appendedLines(pad, box)), APPENDED_LINES.map(r => [r[0], r[1]]));
+    APPENDED_LINES.forEach(([pad, box, want], k) => assert.deepEqual(got[k], want, JSON.stringify([pad, box])));
+  });
   test(`answerParts (${ANSWER_PARTS.length} rows)`, async () => {
     const got = await sp.p.run((S, rows) => rows.map(([res, order]) => S.latex.answerParts(res, order)), ANSWER_PARTS.map(r => [r[0], r[1]]));
     ANSWER_PARTS.forEach(([res, order, want], k) => assert.deepEqual(got[k], want, JSON.stringify([res, order])));

@@ -139,17 +139,28 @@ describe('Keyboard button', () => {
     await p.click('#btn-kbd'); await sleep(400);
     assert.equal(await focused(p), 1);
   });
-  test('hiding the keyboard with its button puts the focus back in the line', { todo: 'r9-8: the focus stays on the button' }, async t => {
+  test('hiding the keyboard with its button puts the focus back in the line', async t => {
     const p = await panel(t, ctx, { lines: ['1'], mode: 'off' });
     await clickLine(p, 0); await p.click('#btn-kbd'); await sleep(400); await p.click('#btn-kbd'); await sleep(300);
     assert.equal(await focused(p), 0);
   });
-  test('Import → Append after clicking into the box adds the pasted lines once', { todo: 'r9-9: Append duplicates the pad' }, async t => {
+  test('Import → Append after clicking into the box adds the pasted lines once', async t => {
     const p = await panel(t, ctx, { lines: ['1'], mode: 'off' });
     await p.click('#btn-menu'); await p.click('#btn-import'); await sleep(100);
     await p.click('#imp'); await p.key('End', { ctrl: true }); await p.key('Enter'); await p.type('2');   // the box still holds the pad
     await p.click('#imp-append'); await sleep(200);
     assert.deepEqual(await values(p), ['1', '2']);
+  });
+  test('Import → Append with lines added inside the pad, or typed over it, adds what was typed', async t => {
+    const p = await panel(t, ctx, { lines: ['1', '3'], mode: 'off' });
+    await p.click('#btn-menu'); await p.click('#btn-import'); await sleep(100);
+    await p.click('#imp'); await p.key('Home', { ctrl: true }); await p.key('End'); await p.key('Enter'); await p.type('2');   // between the pad's lines
+    await p.click('#imp-append'); await sleep(200);
+    assert.deepEqual(await values(p), ['1', '3', '2']);
+    await p.click('#btn-menu'); await p.click('#btn-import'); await sleep(100);
+    await p.type('1');   // over the selected pad: a worksheet that starts like the pad is appended whole
+    await p.click('#imp-append'); await sleep(200);
+    assert.deepEqual(await values(p), ['1', '3', '2', '1']);
   });
   test('the keyboard\'s undo/redo icons are dimmed when there\'s nothing to undo or redo', async t => {
     const p = await panel(t, ctx, { lines: ['1'], mode: 'off' });
