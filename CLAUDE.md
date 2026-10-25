@@ -162,7 +162,8 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
 - **Inline shortcuts:** MathLive's that turn letters typed as a product into symbols this pad isn't for
   (gt → >, nn → ∩, ft → a unit, ch → a non-English cosh…) are removed in `makeRow` (`NO_SHORTCUT`).
 - **`ans`** (typed `ans`, an inline shortcut for `\mathrm{ans}`; MathLive then types `*` and what follows in
-  the same upright style, `\mathrm{ans\cdot2}`, so `ansOut()` moves it back out) is the value of the nearest line above that
+  the same upright style, `\mathrm{ans\cdot2}`, so `ansOut()` moves it back out, for any upright name:
+  `\mathrm{mass}` then `*4` or `^2` too) is the value of the nearest line above that
   has one: any line the mode evaluates, even one with no answer column (`7`). A `:=` line counts with its
   value; a `f(x):=…` definition and true/false lines don't. In Arithmetic, lines with unknowns don't.
 - **User functions:** `f(x) := x^2+1`, then `f(3)` = 10; `f(a+1)` in Algebra, several arguments, nesting and

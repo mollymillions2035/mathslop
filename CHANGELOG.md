@@ -4,6 +4,17 @@ What changed in each version of mathslop. Version numbers follow semver (see "Ve
 The Chrome Web Store has no release-notes field, so the latest entry is also summarized at the top of the
 store description (store/listing.md).
 
+## 1.3.1 (unreleased)
+
+### Fixed
+
+- An upright name such as `\mathrm{mass}` no longer swallows the `·` or `^` typed after it
+  (`\mathrm{mass\cdot4}` read as one word and got no answer); it already worked for `ans`.
+- Hiding the on-screen keyboard with the Keyboard button puts the focus back in the line, at its cursor,
+  instead of leaving it on the button.
+- Import… → Append no longer adds a second copy of the pad when the box was clicked into before pasting:
+  while the pad is still in the box, only the lines that aren't the pad's are appended.
+
 ## 1.3.0 (2026-10-23)
 
 ### New

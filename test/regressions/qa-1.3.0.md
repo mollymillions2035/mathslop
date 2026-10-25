@@ -791,19 +791,19 @@ verifier could not reproduce are marked "not reproduced" and need no test.
 
 - Severity: low · source: retest:fixes
 - Found: Type \mathrm{mass} in LaTeX mode, press Esc, then type *4: the value becomes \mathrm{mass\cdot4}. The same happens in a stock MathLive field (r9fix/mr2.js). In the session, ½·mass·speed² typed this way became \frac12\mathrm{mass\cdot speed}^2 or \frac12\mathrm{speed^2\cdot mass}. It is drawn correctly but gets no answer and no marker (stu9/p1-03b-upright.png), and plain-text copy writes '(1)/(2)m a s s * s p e e d^2'. This is the same problem ansOut() now fixes for ans, but it is fixed only for ans, so the documented \mathrm{price} := 19.99 route mostly fails as soon as an operator follows the name. \mathrm{mass}+1 and 2·\mathrm{mass} work.
-- Test: todo: test/browser/panel-pad.test.mjs › an upright name keeps what is typed after it outside
+- Test: test/browser/panel-pad.test.mjs › an upright name keeps what is typed after it outside (and › … a ^ …; › ansOut does the same for any upright name)
 
 ### r9-8: Hiding the on-screen keyboard with its button leaves the focus on the button
 
 - Severity: low · source: retest:fixes
 - Found: Click into line 3, click Keyboard (focus goes to line 3), click Keyboard again: document.activeElement is BUTTON#btn-kbd (r9fix/kbfocus.js; 1.2.0 does the same). In the session, the next lines I typed were lost, and Enter on the button reopened the keyboard. I had to click back into a line to go on.
-- Test: todo: test/browser/panel-controls.test.mjs › hiding the keyboard with its button puts the focus back in the line
+- Test: test/browser/panel-controls.test.mjs › hiding the keyboard with its button puts the focus back in the line
 
 ### r9-9: Import… Append duplicates the whole pad if you click into the box before pasting
 
 - Severity: low · source: retest:fixes
 - Found: The Import box opens pre-filled with the whole pad, all selected (panel.js line 682). In the session I clicked into the box (which drops the selection), pasted a 13-line worksheet and pressed Append. The pad went from 33 to 77 lines: a full second copy of the pad with the worksheet spliced into the middle of it. One worksheet comment line was also merged into an existing line (stu9/session.log, part p3). Ctrl+Z and the Undo toast restore the pad. Pasting over the selection appends correctly (45 lines). 1.2.0 behaves the same.
-- Test: todo: test/browser/panel-controls.test.mjs › Import → Append after clicking into the box adds the pasted lines once
+- Test: test/browser/panel-controls.test.mjs › Import → Append after clicking into the box adds the pasted lines once (and › … lines added inside the pad, or typed over it …; panel-latex › appendedLines)
 
 ### r9-10: An imported LaTeX comment line shows '= Nothing'
 

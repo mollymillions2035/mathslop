@@ -52,14 +52,10 @@ A multiline math scratchpad in the side panel. Optional live answers, works offl
 ```
 mathslop is a scratchpad for writing math in Chrome's side panel, next to whatever you're working from: an online lesson, a PDF, a homework page. Type expressions the way they look on paper, one per line, instead of drawing with a mouse or writing x^2/(3+y) in plain text.
 
-New in 1.3.0:
-- Click an answer to put it into the line you're working on, or type ans for the answer of the line above.
-- Define functions: f(x) := x² + 1, then f(3).
-- Answer options: degrees or radians, decimal places, and exact or decimal first.
-- Copy the whole pad as plain text as well as LaTeX, with or without the answers.
-- Ctrl+Z undoes anything on the pad, including deleted lines.
-- With answers on, lines with a typo are marked "can't read", and a line that takes too long is skipped instead of holding up the others.
-- Updated math libraries.
+New in 1.3.1:
+- Upright names like mass keep a · or ^ typed after them outside the name.
+- Hiding the on-screen keyboard puts you back in the line you were typing in.
+- Import → Append no longer duplicates the pad if you click into the box before pasting.
 
 Features:
 
