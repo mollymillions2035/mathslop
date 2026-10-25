@@ -115,7 +115,7 @@ Don't use `docs/screenshot.png` (840x1966); store screenshots must be 1280x800 o
 
 **Homepage URL:** https://github.com/mollymillions2035/mathslop
 
-**Support URL:** https://github.com/mollymillions2035/mathslop/issues
+**Support URL:** leave empty. User support is on in the dashboard, so the store's own support tab handles it.
 
 **Mature content:** off.
 
