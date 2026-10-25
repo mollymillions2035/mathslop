@@ -303,8 +303,8 @@ npm run fuzz          optional: engine fuzzing, hostile LaTeX, a monkey test, th
   reviewer test instructions) and a "For each release" checklist; `store/*.png` are the screenshots and promo
   tiles. Keep them in step with features, and keep `PRIVACY.md` true: its URL on GitHub `main` is the
   listing's privacy policy.
-- Every release gets a CHANGELOG.md entry. The dashboard has no release-notes field, so the latest entry is
-  also summarized in the "New in …" block at the top of the store description.
+- Every release gets a CHANGELOG.md entry. The dashboard has no release-notes field, so the new features of the
+  current minor series (not bugfixes) are summarized in the "New in 1.x:" block at the top of the store description.
 - The screenshots and the marquee tile are a marketing half on the left plus a real capture of the panel
   (400 px wide, at x = 880 in the 1280×800 screenshots and x = 1000 in the 1400×560 marquee). To refresh one
   after a UI change, capture the panel at that size and paste it over the right part, keeping the left part.

@@ -7,7 +7,8 @@ from manifest.json and can't be edited in the dashboard; change them there and r
 
 1. Bump `version` in manifest.json and add the release to CHANGELOG.md.
 2. Update the "New in …" block at the top of the description below (the dashboard has no release-notes
-   field, so this is where store users see what changed). Keep only the latest release there.
+   field, so this is where store users see what changed). It lists only the new features of the current
+   minor series ("New in 1.3:"), not bugfixes; a patch release usually leaves it as it is.
 3. Re-read the rest of this file against the code: description, permission justifications, test
    instructions (re-count: max 500 characters), and the library versions in the reviewer reply.
 4. Put the upload date on the CHANGELOG.md entry, keep PRIVACY.md true, and merge the release to `main`
@@ -49,14 +50,12 @@ A multiline math scratchpad in the side panel. Optional live answers, works offl
 ```
 mathslop is a scratchpad for writing math in Chrome's side panel, next to whatever you're working from: an online lesson, a PDF, a homework page. Type expressions the way they look on paper, one per line, instead of drawing with a mouse or writing x^2/(3+y) in plain text.
 
-New in 1.3.2:
-- Upright names like mass keep a · or ^ typed after them outside the name.
-- Hiding the on-screen keyboard puts you back in the line you were typing in.
-- Import → Append no longer duplicates the pad if you click into the box before pasting.
-- Β and upright letters can be given a value with :=, and % comments in imported LaTeX are ignored.
-- A pad too big to save now tells you, instead of quietly not saving.
-- Pasted LaTeX can no longer cover the panel; γ shows as γ in answers.
-- mathslop is now public domain (CC0 1.0); it was MIT or WTFPL.
+New in 1.3:
+- Click an answer to use it in the line you're editing; type ans for the answer above.
+- Define your own functions: f(x) := x^2 + 1, then f(3).
+- Answer options: degrees or radians, decimal places, exact or decimal first.
+- Undo and redo for the whole pad.
+- Copy the whole pad as LaTeX or plain text, with or without answers.
 
 Features:
 
