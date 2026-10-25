@@ -4,7 +4,7 @@ What changed in each version of mathslop. Version numbers follow semver (see "Ve
 The Chrome Web Store has no release-notes field, so the latest entry is also summarized at the top of the
 store description (store/listing.md).
 
-## 1.3.1 (unreleased)
+## 1.3.1 (2026-10-25)
 
 ### Fixed
 
