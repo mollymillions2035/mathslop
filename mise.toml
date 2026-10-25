@@ -1,0 +1,3 @@
+# Node for the tests (CLAUDE.md "Tests"): always the newest LTS, here and in CI (.github/workflows/test.yml).
+[tools]
+node = "lts"
