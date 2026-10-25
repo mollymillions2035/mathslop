@@ -30,7 +30,8 @@
   const key = x => norm(x).replace(/\\(left|right)(?![a-zA-Z])/g, '').replace(/\\exponentialE/g, 'e').replace(/\\imaginaryI/g, 'i')
     .replace(/\{([0-9a-zA-Z])\}/g, '$1').replace(/[\^_]\{\}/g, '');   // and 2^{}, drawn as 2
   // Compute Engine 0.161 writes a float that happens to be whole as 3.0 (1.5·2) and 1.0\cdot10^{30}.
-  const tidy = x => x.replace(/(\d)\.0+(?!\d|\\,)/g, '$1').replace(/(^|[+-])1\\imaginaryI/g, '$1\\imaginaryI');   // and 1i for (-1)^{0.5}
+  const tidy = x => x.replace(/(\d)\.0+(?!\d|\\,)/g, '$1').replace(/(^|[+-])1\\imaginaryI/g, '$1\\imaginaryI')   // and 1i for (-1)^{0.5}
+    .replace(/\\operatorname\{EulerGamma\}([a-zA-Z])?/g, (_, l) => l ? '\\gamma ' + l : '\\gamma');   // CE writes γ by its name
   const numOf = v => String(typeof v === 'object' && v ? v.num : v);
 
   // [p, q] for an exact rational value, as BigInts. MathJSON writes big integers as

@@ -7,12 +7,14 @@ from manifest.json and can't be edited in the dashboard; change them there and r
 
 1. Bump `version` in manifest.json and add the release to CHANGELOG.md.
 2. Update the "New in …" block at the top of the description below (the dashboard has no release-notes
-   field, so this is where store users see what changed). Keep only the latest release there.
+   field, so this is where store users see what changed). It lists only the new features of the current
+   minor series ("New in 1.3:"), not bugfixes; a patch release usually leaves it as it is.
 3. Re-read the rest of this file against the code: description, permission justifications, test
    instructions (re-count: max 500 characters), and the library versions in the reviewer reply.
 4. Put the upload date on the CHANGELOG.md entry, keep PRIVACY.md true, and merge the release to `main`
    before you submit it for review: the privacy policy URL points at PRIVACY.md on `main`.
-5. Run `scripts/package.sh` and upload `dist/mathslop-<version>.zip` (Package tab). Paste every field below
+5. Run `scripts/package.sh --crx` and upload `dist/mathslop-<version>.crx` (Package tab; Verified CRX Uploads
+   is on, so a zip is refused). The zip goes on the GitHub release. Paste every field below
    that changed since the last upload (`git diff <last release tag> -- store/listing.md`), replace changed
    screenshots, then submit for review.
 
@@ -23,12 +25,19 @@ with manifest.json at the root, and contains only:
 
 ```
 manifest.json  background.js  panel.html  panel.js  panel.css  sandbox.html  sandbox.js
-icons/  vendor/  LICENSE  LICENSE-MIT  LICENSE-WTFPL  COPYING
+icons/  vendor/  LICENSE  COPYING
 ```
 
 It leaves out `.git/`, `docs/`, `store/`, `scripts/`, `dist/`, `CLAUDE.md`, `CHANGELOG.md`, `README.md` and
 `PRIVACY.md` (none of them are loaded by the extension). Rebuild after every manifest or code change. Every upload needs a higher
 `version` than the last one.
+
+**Verified CRX Uploads** (Package tab, on since 1.3.2): every upload must be a CRX signed with our private key.
+`scripts/package.sh --crx` signs the same files as the zip with `~/.config/mathslop/crx-key.pem` (or
+`$MATHSLOP_CRX_KEY`, or `--crx PATH`) and checks the result. The private key lives in Bitwarden ("mathslop CRX
+signing key") and never in the repo or a Google account; restore it from there to that path on a new machine.
+The public half, which is what the dashboard has, is `store/crx-key.pub.pem`, and package.sh refuses any other
+key. If the private key is lost, Chrome Web Store support can replace it, which takes up to a week.
 
 ## Store listing tab
 
@@ -49,11 +58,12 @@ A multiline math scratchpad in the side panel. Optional live answers, works offl
 ```
 mathslop is a scratchpad for writing math in Chrome's side panel, next to whatever you're working from: an online lesson, a PDF, a homework page. Type expressions the way they look on paper, one per line, instead of drawing with a mouse or writing x^2/(3+y) in plain text.
 
-New in 1.3.1:
-- Upright names like mass keep a · or ^ typed after them outside the name.
-- Hiding the on-screen keyboard puts you back in the line you were typing in.
-- Import → Append no longer duplicates the pad if you click into the box before pasting.
-- Β and upright letters can be given a value with :=, and % comments in imported LaTeX are ignored.
+New in 1.3:
+- Click an answer to use it in the line you're editing; type ans for the answer above.
+- Define your own functions: f(x) := x^2 + 1, then f(3).
+- Answer options: degrees or radians, decimal places, exact or decimal first.
+- Undo and redo for the whole pad.
+- Copy the whole pad as LaTeX or plain text, with or without answers.
 
 Features:
 
@@ -81,7 +91,7 @@ Good to know:
 - Answers come from the Compute Engine library. Angles are in radians unless you switch to Deg, and some lines just won't get an answer. Check anything that matters.
 - Dark theme only.
 
-Free and open source (MIT or WTFPL): https://github.com/mollymillions2035/mathslop
+Free, open source and public domain (CC0): https://github.com/mollymillions2035/mathslop
 ```
 
 **Category:** Education (in the Productivity group).

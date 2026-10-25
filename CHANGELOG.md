@@ -1,8 +1,27 @@
 # Changelog
 
 What changed in each version of mathslop. Version numbers follow semver (see "Versioning" in CLAUDE.md).
-The Chrome Web Store has no release-notes field, so the latest entry is also summarized at the top of the
-store description (store/listing.md).
+The Chrome Web Store has no release-notes field, so the new features of the current minor series are summarized
+at the top of the store description (store/listing.md).
+
+## 1.3.2 (2026-10-25)
+
+1.3.1 never reached the Chrome Web Store (its review was cancelled for this release), so on the store 1.3.2
+also brings the 1.3.1 changes below.
+
+### Changed
+
+- mathslop is now dedicated to the public domain under CC0 1.0 (`LICENSE`); it was dual licensed MIT OR
+  WTFPL. `LICENSE-MIT` and `LICENSE-WTFPL` are gone; `COPYING` says what is covered. The libraries in
+  `vendor/` keep their MIT licenses.
+
+### Fixed
+
+- A pad too big to save (Chrome keeps 10 MB per extension) now says so in a toast, once, instead of failing
+  silently with an error in the console.
+- A pasted line with `\htmlStyle{position:fixed;…}` or `{position:absolute;top:-500px}` can no longer cover
+  the panel or draw outside its own row.
+- Euler's constant shows as γ in answers, not as Compute Engine's name for it (2γ was "2EulerGamma").
 
 ## 1.3.1 (2026-10-25)
 

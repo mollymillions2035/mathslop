@@ -11,13 +11,9 @@ Rough priority order.
       migration from `v1` (see "Renaming / moving the folder").
 2. **Hostile-input and fuzz findings** (`npm run fuzz`, test/fuzz/; first runs on 1.3.0). Nothing ran, navigated or
       reached the network for any payload. Open:
-      - `\htmlStyle{position:fixed;inset:0;…}{x}` in a line covers the whole panel, header included, and
-        `position:absolute;top:-500px` moves a line's content out of its row (cosmetic: a pasted line can hide the UI).
       - 300 nested `\sqrt{…}` hang the panel itself (MathLive's rendering, > 60 s).
       - `\href{javascript:…}` and a 200 000-character line throw into the console (MathLive "Invalid URL", stack
         overflow); the panel survives both.
-      - A save that doesn't fit `chrome.storage.local` (10 MB) is an unhandled `kQuotaBytes` error from `store.save`,
-        and the pad isn't saved.
       The engine fuzzer and the monkey test found nothing over several seeds.
 3. **Plotting — possible future enhancement, not planned.** New `type: 'plot'` in sandbox.js using `compile()`
       to sample points, returning number arrays; draw on a `<canvas>` in the panel. The reason CE lives in the sandbox in the first place.
@@ -48,7 +44,7 @@ vendor/compute-engine/                Compute Engine (UMD build), loaded only by
 vendor/mathlive/                      MathLive + its fonts/static CSS, loaded only by panel.html
 background.js                         makes the toolbar icon open the side panel
 docs/screenshot.png                   used only by README.md; the extension never loads it
-store/ PRIVACY.md scripts/            Chrome Web Store listing, assets and packaging; not shipped (see "Publishing")
+store/ PRIVACY.md scripts/            Chrome Web Store listing, assets, CRX public key and packaging; not shipped (see "Publishing")
 CHANGELOG.md                          what changed in each version; not shipped
 test/ package.json mise.toml          the test suite (see "Tests"); not shipped, no dependencies
 ```
@@ -223,7 +219,8 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
   right-click menu on a line without the focus gets no keys (stock MathLive): Esc there would start a
   `\command` in the line, so the pad closes the menu by clicking its dismiss layer instead. panel.css hides and dims the line's ☰
   with `color`, not `opacity`: opacity makes the toggle a stacking context, which traps the full-panel layer
-  MathLive puts inside it to close the menu on a click elsewhere. `?` must stay typeable (it's a normal character in math), which is
+  MathLive puts inside it to close the menu on a click elsewhere. For the same reason the containment that keeps
+  `\htmlStyle{position:fixed…}` inside its line (`contain: paint`) is on `::part(content)`, never on the math-field. `?` must stay typeable (it's a normal character in math), which is
   why the guide is on Ctrl+/.
 - **No read-aloud.** MathLive's Ctrl+Alt+↑/↓ `speak` keybindings are removed in `makeRow`: they send the line
   to Chrome TTS, which may be an online voice, breaking "nothing leaves the device" in PRIVACY.md. People
@@ -234,6 +231,7 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
 - Theme: libadwaita dark only (GNOME). Fonts: Adwaita Sans / Adwaita Mono with fallbacks.
 - Storage: `chrome.storage.local`, key `mathslop.v1` → `{ lines, mode, varColors, angle, places, order,
   copyFmt, copyAns }`. Missing fields fall back to defaults, so older saved data still loads.
+  A save that doesn't fit (10 MB) shows a toast once per run of failed saves (`saveFailed`), not on every keystroke.
   Falls back to localStorage if panel.html is opened outside the extension.
 
 ## Tests
@@ -296,7 +294,8 @@ npm run fuzz          optional: engine fuzzing, hostile LaTeX, a monkey test, th
 ## Publishing (Chrome Web Store)
 
 - `scripts/package.sh` builds `dist/mathslop-<version>.zip` (gitignored) from an allowlist of runtime files
-  (`--suffix tests` writes `dist/mathslop-<version>-tests.zip` instead, same contents).
+  (`--suffix tests` writes `dist/mathslop-<version>-tests.zip` instead, same contents; `--crx` also writes the
+  signed `.crx` the store takes).
   It fails if a file referenced by manifest.json, the HTML or CSS is missing, or if a shipped file other than a
   license is referenced by none of them. A new top-level runtime file must be added to `TOP_FILES` *and* be
   referenced from manifest.json, an HTML page or a CSS file (references from JS aren't checked); files under
@@ -305,8 +304,8 @@ npm run fuzz          optional: engine fuzzing, hostile LaTeX, a monkey test, th
   reviewer test instructions) and a "For each release" checklist; `store/*.png` are the screenshots and promo
   tiles. Keep them in step with features, and keep `PRIVACY.md` true: its URL on GitHub `main` is the
   listing's privacy policy.
-- Every release gets a CHANGELOG.md entry. The dashboard has no release-notes field, so the latest entry is
-  also summarized in the "New in …" block at the top of the store description.
+- Every release gets a CHANGELOG.md entry. The dashboard has no release-notes field, so the new features of the
+  current minor series (not bugfixes) are summarized in the "New in 1.x:" block at the top of the store description.
 - The screenshots and the marquee tile are a marketing half on the left plus a real capture of the panel
   (400 px wide, at x = 880 in the 1280×800 screenshots and x = 1000 in the 1400×560 marquee). To refresh one
   after a UI change, capture the panel at that size and paste it over the right part, keeping the left part.
@@ -316,6 +315,10 @@ npm run fuzz          optional: engine fuzzing, hostile LaTeX, a monkey test, th
   lightly.
 - `icons/icon128.png` has 16 px transparent padding (96 px artwork), as the store asks; 16/32/48 stay full-bleed.
 - Every upload needs a higher `version` than the last one uploaded.
+- **Verified CRX Uploads** are on (since 1.3.2): the store takes only `dist/mathslop-<version>.crx` from
+  `scripts/package.sh --crx`, signed with the private key in `~/.config/mathslop/crx-key.pem` (backed up in the
+  user's Bitwarden; never commit it, `*.pem` is gitignored). The public half is `store/crx-key.pub.pem`. Details
+  in store/listing.md, "Package". GitHub releases still get the zip.
 
 ## Vendored versions
 
@@ -342,8 +345,10 @@ and writes big integers in MathJSON as `{ num: "…e+2499" }`.
 
 ## License
 
-Dual licensed `MIT OR WTFPL` (LICENSE, LICENSE-MIT, LICENSE-WTFPL). Files under `vendor/` keep their own
-licenses (both MIT, see each LICENSE.txt) — keep those files when updating vendored libraries.
+Public domain under CC0 1.0 (`LICENSE`: the official CC0 1.0 Universal text, unmodified, so GitHub detects it as
+`cc0-1.0`; don't add anything to it). `COPYING` holds the dedication notice and the vendor exceptions. Files under
+`vendor/` keep their own licenses (both MIT, see each LICENSE.txt) — keep those files when updating vendored
+libraries.
 
 ## Related
 

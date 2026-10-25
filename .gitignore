@@ -1,2 +1,5 @@
 dist/
 coverage/
+# CRX signing keys never go in the repo (store/crx-key.pub.pem is the public half)
+*.pem
+!store/crx-key.pub.pem
