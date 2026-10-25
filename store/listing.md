@@ -16,9 +16,6 @@ from manifest.json and can't be edited in the dashboard; change them there and r
    that changed since the last upload (`git diff <last release tag> -- store/listing.md`), replace changed
    screenshots, then submit for review.
 
-For 1.3.0, also re-paste the Homepage URL, Support URL and Privacy policy URL: 1.2.0 was submitted with
-links to the old account name (girlpocalypse), and those dashboard fields don't come from the package.
-
 ## Package (Build → Package)
 
 Build it with `scripts/package.sh` (runnable from any directory). It writes `dist/mathslop-<version>.zip`

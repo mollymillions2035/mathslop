@@ -89,7 +89,8 @@ describe('the packaged extension', () => {
       changed.push(f);
       assert.equal(unhook(x.toString('utf8')), y.toString('utf8'), `${f} differs by more than its test hook`);
     }
-    assert.deepEqual(changed.sort(), ['panel.js', 'sandbox.js']);
+    // Releases up to 1.3.0 were built before the hooks existed; from 1.3.1 on, a build of the tag is identical.
+    assert.ok(changed.every(f => f === 'panel.js' || f === 'sandbox.js'), 'changed: ' + changed);
   });
 
   test('CSP: no eval in the panel, eval but no network in the engine', async () => {
