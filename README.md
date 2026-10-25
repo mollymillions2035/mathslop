@@ -8,4 +8,4 @@ Get it from the [Chrome Web Store](https://chromewebstore.google.com/detail/math
 
 Tests: `npm test` (the latest LTS Node, pinned in `mise.toml`, and Chromium, no dependencies; see "Tests" in `CLAUDE.md`).
 
-Dual licensed as MIT and WTFPL - see `LICENSE`.
+Public domain under CC0 1.0 - see `LICENSE`. The libraries in `vendor/` keep their own (MIT) licenses; see `COPYING`.

@@ -342,8 +342,10 @@ and writes big integers in MathJSON as `{ num: "…e+2499" }`.
 
 ## License
 
-Dual licensed `MIT OR WTFPL` (LICENSE, LICENSE-MIT, LICENSE-WTFPL). Files under `vendor/` keep their own
-licenses (both MIT, see each LICENSE.txt) — keep those files when updating vendored libraries.
+Public domain under CC0 1.0 (`LICENSE`: the official CC0 1.0 Universal text, unmodified, so GitHub detects it as
+`cc0-1.0`; don't add anything to it). `COPYING` holds the dedication notice and the vendor exceptions. Files under
+`vendor/` keep their own licenses (both MIT, see each LICENSE.txt) — keep those files when updating vendored
+libraries.
 
 ## Related
 

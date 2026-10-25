@@ -42,7 +42,7 @@ export function referenceClosure(dir){
     if (f.endsWith('.js') && !f.startsWith('vendor/')) for (const [, u] of text.matchAll(/(?:\bimport|\bexport[^;]*?\bfrom|\bimport\s*\()\s*['"](\.{1,2}\/[^'"]+)['"]/g)) add(u, f);
   }
   // license texts ship too
-  for (const f of ['LICENSE', 'LICENSE-MIT', 'LICENSE-WTFPL', 'COPYING']) if (fs.existsSync(path.join(dir, f))) out.add(f);
+  for (const f of ['LICENSE', 'COPYING']) if (fs.existsSync(path.join(dir, f))) out.add(f);
   for (const d of fs.readdirSync(path.join(dir, 'vendor'))) if (fs.existsSync(path.join(dir, 'vendor', d, 'LICENSE.txt'))) out.add(`vendor/${d}/LICENSE.txt`);
   return [...out].sort();
 }

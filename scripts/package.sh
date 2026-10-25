@@ -38,7 +38,7 @@ for _p in "${_parts[@]}"; do (( _p <= 65535 )) || die "manifest version part $_p
 
 # ---- allowlist (paths relative to repo root) ----
 TOP_FILES=(manifest.json background.js panel.html panel.js panel.css sandbox.html sandbox.js
-           LICENSE LICENSE-MIT LICENSE-WTFPL COPYING)
+           LICENSE COPYING)
 FILES=()
 for f in "${TOP_FILES[@]}"; do
   [[ -f "$f" ]] || die "allowlisted file missing: $f"
@@ -116,7 +116,7 @@ for css in sorted(p for p in shipped if p.endswith('.css')):
         ref(os.path.join(os.path.dirname(css), u), css)
 
 # Files allowed to ship without being referenced: license texts.
-license_ok = lambda p: os.path.basename(p) in ('LICENSE', 'LICENSE-MIT', 'LICENSE-WTFPL', 'COPYING', 'LICENSE.txt')
+license_ok = lambda p: os.path.basename(p) in ('LICENSE', 'COPYING', 'LICENSE.txt')
 for p in sorted(shipped - refs):
     if not license_ok(p):
         errors.append(f"'{p}' would be packaged but nothing references it (remove it or reference it)")
