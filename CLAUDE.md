@@ -25,7 +25,7 @@ Rough priority order.
       `chrome@stable` follows Chrome, and `engines` could move up with it.
 4. **Plotting — possible future enhancement, not planned.** New `type: 'plot'` in sandbox.js using `compile()`
       to sample points, returning number arrays; draw on a `<canvas>` in the panel. The reason CE lives in the sandbox in the first place.
-5. **Units — possible future enhancement, on hold** while deciding whether and how units should work at
+5. **Units in equations (5 km + 300 m, km/h → m/s) — possible future enhancement, on hold** while deciding whether and how units should work at
       all. A working attempt is on the local branch `units-experiment` (not pushed). What it found: CE 0.161 reads `5\,\mathrm{km}` and
       `5\text{km/h}` as `Quantity`, but MathLive's own unit shortcuts write `\operatorname{km}`, which CE reads as
       a variable; single-letter units (m, s, g, h) can't be told apart from variables while typing; CE's `\to`
