@@ -7,17 +7,9 @@ Manifest V3, no build step, no network access at runtime — every library is ve
 
 Rough priority order.
 
-1. **Plotting.** New `type: 'plot'` in sandbox.js using `compile()` to sample points, returning number arrays;
-      draw on a `<canvas>` in the panel. The reason CE lives in the sandbox in the first place.
-2. **Multiple pads** (named tabs). Storage becomes `{ pads: [...] }`, so bump to `mathslop.v2` with a
+1. **Multiple pads** (named tabs). Storage becomes `{ pads: [...] }`, so bump to `mathslop.v2` with a
       migration from `v1` (see "Renaming / moving the folder").
-3. **Units — possible future enhancement, on hold** while deciding whether and how units should work at
-      all. A working attempt is on the local branch `units-experiment` (not pushed). What it found: CE 0.161 reads `5\,\mathrm{km}` and
-      `5\text{km/h}` as `Quantity`, but MathLive's own unit shortcuts write `\operatorname{km}`, which CE reads as
-      a variable; single-letter units (m, s, g, h) can't be told apart from variables while typing; CE's `\to`
-      doesn't convert (`\operatorname{UnitConvert}` does); exact unit answers come out as siunitx `\qty[…]`,
-      which MathLive can't render; and unit names count as unknowns, so Arithmetic skips unit lines.
-4. **Hostile-input and fuzz findings** (`npm run fuzz`, test/fuzz/; first runs on 1.3.0). Nothing ran, navigated or
+2. **Hostile-input and fuzz findings** (`npm run fuzz`, test/fuzz/; first runs on 1.3.0). Nothing ran, navigated or
       reached the network for any payload. Open:
       - `\htmlStyle{position:fixed;inset:0;…}{x}` in a line covers the whole panel, header included, and
         `position:absolute;top:-500px` moves a line's content out of its row (cosmetic: a pasted line can hide the UI).
@@ -27,10 +19,18 @@ Rough priority order.
       - A save that doesn't fit `chrome.storage.local` (10 MB) is an unhandled `kQuotaBytes` error from `store.save`,
         and the pad isn't saved.
       The engine fuzzer and the monkey test found nothing over several seeds.
-5. **Tests on the latest LTS Node in CI.** The tests workflow (PR #12) runs them on Node 22, the `engines`
+3. **Tests on the latest LTS Node in CI.** The tests workflow (PR #12) runs them on Node 22, the `engines`
       minimum in package.json. Node is used only by the tests (the extension runs in Chrome, packaging is bash),
       so no one is stuck on an old version: `node-version: 'lts/*'` would follow the newest LTS the way
       `chrome@stable` follows Chrome, and `engines` could move up with it.
+4. **Plotting — possible future enhancement, not planned.** New `type: 'plot'` in sandbox.js using `compile()`
+      to sample points, returning number arrays; draw on a `<canvas>` in the panel. The reason CE lives in the sandbox in the first place.
+5. **Units — possible future enhancement, on hold** while deciding whether and how units should work at
+      all. A working attempt is on the local branch `units-experiment` (not pushed). What it found: CE 0.161 reads `5\,\mathrm{km}` and
+      `5\text{km/h}` as `Quantity`, but MathLive's own unit shortcuts write `\operatorname{km}`, which CE reads as
+      a variable; single-letter units (m, s, g, h) can't be told apart from variables while typing; CE's `\to`
+      doesn't convert (`\operatorname{UnitConvert}` does); exact unit answers come out as siunitx `\qty[…]`,
+      which MathLive can't render; and unit names count as unknowns, so Arithmetic skips unit lines.
 
 ## Load it
 
