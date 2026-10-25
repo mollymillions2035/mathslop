@@ -809,7 +809,7 @@ verifier could not reproduce are marked "not reproduced" and need no test.
 
 - Severity: low · source: retest:fixes
 - Found: Importing a line '% algebra worksheet' gives a row that draws as empty but has the answer '= Nothing', read to screen readers as "equals capital N O T H I N G". Copy all… plain text then writes a line ' = Nothing'. A lone '%' does the same. 1.2.0 does the same. Pasted LaTeX, from Overleaf for example, often contains % comments.
-- Test: todo: test/engine/lines.test.mjs › empty boxes and rewriting (% a comment)
+- Test: test/engine/lines.test.mjs › empty boxes and rewriting (% a comment, %, 1+1 % a note)
 
 ### r9-11: Misleading tip and odd display for Greek constants
 

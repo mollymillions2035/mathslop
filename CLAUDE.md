@@ -117,11 +117,16 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
 - **Answers modes:** Off / Arithmetic / Algebra. Arithmetic answers a line only if it has no unknowns
   (`expr.unknowns` is empty *before* evaluating, so letters assigned earlier with `:=` count as known).
   Algebra also simplifies symbolic lines (2x+3x → 5x). `:=` lines are evaluated in every mode, but only
-  for a letter (x, D, N, Δ, Γ: any single Latin or Greek letter except the constants e, i, π, γ, φ) or a
-  function `f(x, y) :=`. Any other name CE's library defines is refused as "can't read" (`assignable` /
+  for a letter (x, D, N, Δ, Β, Γ: any single Latin or Greek letter except the constants e, i, π, γ, φ, even
+  one CE also defines, like Β for its beta function) or a function `f(x, y) :=`. An upright letter
+  (`\mathrm{N} := 3`, which CE reads as the newton) is the plain letter N from that line down (`uprightOf`
+  in sandbox.js); above it, and for every upright letter never given a value, CE's reading stays, and
+  `\mathrm{d}` is never rewritten (dx). Any other name CE's library defines is refused as "can't read" (`assignable` /
   `libraryHas`, checked in an untouched engine): CE reads `a+b := 5` as a new definition of Add, and
   `area := 12` (a·r·e·a) as one of the invisible ×, which changed every line below. A subscripted name
-  (`x_1 := 3`) is refused too: CE accepts it but never uses the value.
+  (`x_1 := 3`) is refused too: CE accepts it but never uses the value, and so is `x_{1:=3}` (`:=` typed
+  inside the subscript), which CE can't parse. A LaTeX comment (`%` to the end of the line, not `\%`) is
+  dropped before parsing, so an imported `% worksheet` line gets nothing, not CE's "Nothing".
 - **Answers default to Off**, and turning them on from Off shows a warning dialog (`#ans-warn`) suggesting
   learners keep them off; "Keep answers off" is the focused default and Esc cancels. Deliberate: the pad is
   meant for learning. No warning when switching Arithmetic ↔ Algebra or when a saved mode is restored.
@@ -136,7 +141,8 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
   ≥ 10¹⁵ and not whole (10¹⁶/3 ≈ 3.33·10¹⁵; a whole number like 10¹⁵ has no decimal to show), get scientific
   notation (with `=` when nothing was rounded off: 10⁻⁵ = 1.00·10⁻⁵ at 2 places), real and imaginary parts beyond a double (e^{1000}) or below it
   (e^{-1000}) too; a decimal result (100·1.07¹⁰) is shown rounded instead of in full. A complex value is
-  rounded part by part with the same rules (CE's `Real`/`Imaginary`, so ⅛i ≈ 0.13i at 2 places). Exact
+  rounded part by part with the same rules (CE's `Real`/`Imaginary`, so ⅛i ≈ 0.13i at 2 places); when one
+  part is rounded, a decimal other part gets as many places (sin 0.3 − 0.3i ≈ 0.30−0.30i, but 1+1.41i). Exact
   numbers longer than 200 characters (10000!) show only the decimal, and an exact form with a rounded float
   inside (94.247…/π for 180/π·arcsin(0.5)) isn't shown. No decimal for NaN (0⁰ = Indeterminate).
 - No answer that just repeats the line: compared after dropping spaces and braces around one character

@@ -133,23 +133,26 @@
   // The decimal answer: { latex, exact } where exact means "=" rather than "≈".
   // places 'auto' keeps Compute Engine's digits; a number rounds to that many places, except values
   // that would round to 0 (with places > 0) or are 10^15 or more, which get scientific notation.
-  function decimal(ce, val, approxV, places, r = exactValue(val)){
+  function decimal(ce, val, approxV, places, r = exactValue(val), pad = false){
     const auto = places === 'auto', aL = tidy(approxV.latex), j = approxV.json;
-    // A complex value: each part by the rules below (\frac{1}{8}i ≈ 0.13i at 2 places, i·e^{1000}).
+    // A complex value: each part by the rules below (\frac{1}{8}i ≈ 0.13i at 2 places, i·e^{1000}). When one
+    // part is rounded, a decimal other part is written to as many places (0.30-0.30i, not 0.30-0.3i; 1+1.41i).
     if (Array.isArray(j) && j[0] === 'Complex') {
-      const ps = ['Real', 'Imaginary'].map((op, k) => {
+      const parts = pad => ['Real', 'Imaginary'].map((op, k) => {
         let p = null, pa = null;
         try { p = ce.box([op, val]).evaluate(); pa = p.N(); } catch {}
         if (!(pa && pa.isNumberLiteral && pa.im === 0)) p = pa = ce.box(j[k + 1]);   // \sqrt{-2}: no exact parts
-        return decimal(ce, p, pa, places);
+        return decimal(ce, p, pa, places, undefined, pad);
       });
+      let ps = parts(false);
+      if (!auto && ps.some(d => !d.exact)) ps = parts(true);
       const [re, im] = ps.map(d => /^-?0(\.0*)?$/.test(norm(d.latex)) ? null : d.latex);
       const imL = im === null ? null : (im === '1' ? '' : im === '-1' ? '-' : im) + '\\imaginaryI';
       return { latex: re && imL ? re + (imL.startsWith('-') ? '' : '+') + imL : re || imL || '0', exact: ps.every(d => d.exact) };
     }
     if (r) {
       const k = exactPlaces(r), a = r[0] < 0n ? -r[0] : r[0];
-      if (k >= 0 && (auto || k <= places)) return { latex: k <= 20 ? fixed(r, k) : aL, exact: true };
+      if (k >= 0 && (auto || k <= places)) return { latex: k <= 20 ? fixed(r, pad && k > 0 ? places : k) : aL, exact: true };
       if (auto) {
         // 22/7 = 3.\overline{142857}, if the repetend Compute Engine finds in its digits really is p/q
         const rep = approxV.toLatex({ repeatingDecimal: 'vinculum' });
@@ -188,23 +191,35 @@
   let library = null;
   const libraryHas = name => { library ??= new CE(); try { return !!library.lookupDefinition(name); } catch { return true; } };
   // A single letter or a Greek letter can always be given a value, even one Compute Engine also uses for
-  // something (D, N, Γ, ζ); its constants e, i, π, γ and φ can't. (CE's names for \zeta, \varpi… below.)
+  // something (D, N, Β, Γ, ζ); its constants e, i, π, γ and φ can't. (CE's names for \zeta, \varpi… below.)
   const GREEK = new Set(('alpha beta delta epsilon epsilonSymbol Zeta eta theta thetaSymbol iota kappa kappaSymbol lambda mu nu ' +
     'xi omicron piSymbol rho rhoSymbol sigma finalSigma tau upsilon phi chi psi omega digamma ' +
-    'Gamma Delta Theta Lambda Xi CapitalPi Sigma Upsilon Phi Psi Omega').split(' '));
+    'Beta Gamma Delta Theta Lambda Xi CapitalPi Sigma Upsilon Phi Psi Omega').split(' '));
   const CONSTANTS = new Set(['e', 'i', 'Pi', 'EulerGamma', 'GoldenRatio', 'ExponentialE', 'ImaginaryUnit']);
   const assignable = name => !CONSTANTS.has(name) && (/^[A-Za-z]$/.test(name) || GREEK.has(name) || !libraryHas(name));
 
+  // Upright letters given a value with := (\mathrm{N} := 3), per engine: the engine reads \mathrm{N} as a unit
+  // (newton), so from that line on the pad's \mathrm{N} is the letter N. Not before, and not for d (dx).
+  const uprightOf = new WeakMap();
   function evalLine(ce, src, m){
     // MathLive's dx shortcut writes \differentialD, which the engine reads in \int but not in \frac{d}{dx}.
     // And an empty ^{} or _{} (2^ then →) is drawn as nothing: 2^{}3 looks like 23, so it is 23.
-    src = (src || '').trim().replace(/\\differentialD(?![a-zA-Z])/g, '\\mathrm{d}').replace(/[\^_]\{\}/g, '');
+    // A LaTeX comment (% to the end, not \%) is dropped: an imported '% worksheet 3' line is no answer.
+    src = (src || '').replace(/(^|[^\\])%.*/, '$1').trim()
+      .replace(/\\differentialD(?![a-zA-Z])/g, '\\mathrm{d}').replace(/[\^_]\{\}/g, '');
     if (!src) return null;
+    const upright = uprightOf.get(ce) || new Set(); uprightOf.set(ce, upright);
+    const named = /^\\mathrm\{([A-Za-ce-z])\}(?=\s*\\coloneq)/.exec(src);
+    if (named && assignable(named[1])) upright.add(named[1]);
+    if (upright.size) src = src.replace(/\\mathrm\{([A-Za-z])\}/g, (u, c) => upright.has(c) ? c : u);
     // An empty box left in the line (the keyboard's xⁿ, ∫ limits, a log base): \placeholder{} would just be
     // left out, so 2^□3 would be answered 6.
     if (src.includes('\\placeholder')) return { invalid: 'missing' };
     const e = ce.parse(src);
-    if (!e.isValid) { const code = parseError(e); return code ? { invalid: code } : null; }
+    if (!e.isValid) {
+      if (/_\{[^{}]*\\coloneq/.test(src)) return { invalid: 'subscript' };   // x_{1:=3}: := typed in the subscript
+      const code = parseError(e); return code ? { invalid: code } : null;
+    }
     if (e.latex.includes('\\square')) return { invalid: 'missing' };   // typed log(100) is \log_{100}(\square)
     // Only a letter (x, D, Δ) or a function f(x, y) can be given a value. The parser reads a+b := 5 as a new
     // definition of Add, and area := 12 (a·r·e·a) as one of the invisible ×, which would change every line

@@ -70,7 +70,9 @@ describe('complex values, part by part', () => rows(S, [
   ['1+\\sqrt{-2}', p2, ap('1+\\sqrt{2}\\imaginaryI', '1+1.41\\imaginaryI')],
   ['\\frac12+\\frac14 i', p2, eq(null, '0.5+0.25\\imaginaryI')],              // every part exact → "="
   ['\\frac12-\\frac14 i', p2, eq(null, '0.5-0.25\\imaginaryI')],
-  ['\\sin(0.3)-0.3i', { places: 2, todo: 'mixed precision: 0.30-0.3i' }, ap(null, '0.30-0.30\\imaginaryI')],
+  ['\\sin(0.3)-0.3i', p2, ap(null, '0.30-0.30\\imaginaryI')],                // one part rounded: both to 2 places
+  ['\\frac18+0.3i', p2, ap(null, '0.13+0.30\\imaginaryI')],
+  ['\\sin(0.3)-0.3i', {}, { approx: '0.295\\,520\\,206\\,661\\,339\\,575\\,105-0.3\\imaginaryI' }],   // auto: as the engine has them
 ]));
 
 describe('direct calls and stub-only blocks', () => {
