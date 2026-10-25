@@ -56,6 +56,7 @@ New in 1.3.1:
 - Upright names like mass keep a · or ^ typed after them outside the name.
 - Hiding the on-screen keyboard puts you back in the line you were typing in.
 - Import → Append no longer duplicates the pad if you click into the box before pasting.
+- Β and upright letters can be given a value with :=, and % comments in imported LaTeX are ignored.
 
 Features:
 

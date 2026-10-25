@@ -14,6 +14,11 @@ store description (store/listing.md).
   instead of leaving it on the button.
 - Import… → Append no longer adds a second copy of the pad when the box was clicked into before pasting:
   while the pad is still in the box, only the lines that aren't the pad's are appended.
+- Β (capital beta) and an upright letter such as `\mathrm{N}` can be given a value with `:=`, like any other
+  letter; they were refused because Compute Engine also uses them (the beta function, the newton).
+- `x_{1:=3}` (`:=` typed inside the subscript) is marked as a subscripted name, not as an unclosed bracket.
+- A LaTeX `%` comment line (from imported LaTeX) no longer shows "= Nothing"; a comment after a line is ignored.
+- With fixed decimals, both parts of a complex answer are rounded to the same places (0.30−0.30i, not 0.30−0.3i).
 
 ## 1.3.0 (2026-10-23)
 

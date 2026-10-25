@@ -14,7 +14,7 @@ const res = (exact, approx, approxIsExact = false, group = false) => ({ exact, a
 describe('markers', () => {
   test('every invalid code the engine sends has its own tip, and a real line produces each of them', async t => {
     const p = await panel(t, ctx, { lines: [
-      '2^{\\placeholder{}}3', 'area\\coloneq 12', 'x_1\\coloneq 3', '1+', '\\foo', 'x_{1\\coloneq3}', '1)', 'x\\rangle',
+      '2^{\\placeholder{}}3', 'area\\coloneq 12', 'x_1\\coloneq 3', '1+', '\\foo', '\\sqrt{2', '1)', 'x\\rangle',
     ], mode: 'arith' }, { hook: true });
     await settled(p, { quiet: 1200 });
     const got = await p.run(S => [...document.querySelectorAll('.row .res')].map(r => [r.querySelector('.mark')?.textContent, r.title]));

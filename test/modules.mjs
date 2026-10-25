@@ -35,6 +35,7 @@ export const ENGINE = {
   GREEK:           ['lines', 'hook'],
   CONSTANTS:       ['lines', 'hook'],
   assignable:      ['lines', 'hook'],
+  uprightOf:       ['lines', 'via evalLine'],
   evalLine:        ['lines', 'hook'],
   // sandbox.js (the protocol)
   CE:              ['protocol', 'via load.mjs (the ce option)'],
