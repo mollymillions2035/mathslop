@@ -1,29 +1,46 @@
-/* mathslop — libadwaita dark. Shared by panel.html. */
+/* mathslop — libadwaita light and dark. Shared by panel.html. */
 [hidden]{display:none!important}
+/* Every color is light-dark(light, dark): it follows color-scheme, which is the system's (Chrome's
+   Appearance setting) unless the Theme menu sets data-theme on <html> (panel.js). */
+:root{color-scheme:light dark}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
 :root{
   --ML__static-fonts:true;
-  /* libadwaita dark palette */
-  --window:#222226; --view:#1d1d20; --headerbar:#2e2e32; --card:#2e2e32; --dialog:#36363a;
-  --fg:#ffffff; --dim:rgb(255 255 255 / .55); --border:rgb(255 255 255 / .10); --shade:rgb(0 0 0 / .36);
-  --btn:rgb(255 255 255 / .10); --btn-hover:rgb(255 255 255 / .15); --btn-active:rgb(255 255 255 / .30);
-  --accent-bg:#3584e4; --accent:#78aeed; --accent-soft:rgb(53 132 228 / .30);
-  --result:#8ff0a4; --danger:#ff7b63; --row-focus:rgb(255 255 255 / .05);
+  /* libadwaita palette */
+  --window:light-dark(#fafafb,#222226); --view:light-dark(#ffffff,#1d1d20); --headerbar:light-dark(#ffffff,#2e2e32);
+  --card:light-dark(#ffffff,#2e2e32); --dialog:light-dark(#ffffff,#36363a);
+  --fg:light-dark(rgb(0 0 6 / .8),#ffffff); --dim:light-dark(rgb(0 0 6 / .55),rgb(255 255 255 / .55));
+  --border:light-dark(rgb(0 0 6 / .12),rgb(255 255 255 / .10)); --shade:light-dark(rgb(0 0 6 / .12),rgb(0 0 0 / .36));
+  --pop-shade:light-dark(rgb(0 0 6 / .16),rgb(0 0 0 / .42));
+  --btn:light-dark(rgb(0 0 6 / .08),rgb(255 255 255 / .10)); --btn-hover:light-dark(rgb(0 0 6 / .12),rgb(255 255 255 / .15));
+  --btn-active:light-dark(rgb(0 0 6 / .22),rgb(255 255 255 / .30));
+  --accent-bg:#3584e4; --accent:light-dark(#0461be,#78aeed); --accent-soft:light-dark(rgb(53 132 228 / .25),rgb(53 132 228 / .30));
+  --result:light-dark(#1b8553,#8ff0a4); --danger:light-dark(#c30000,#ff7b63);
+  --row-focus:light-dark(rgb(0 0 6 / .04),rgb(255 255 255 / .05));
+  /* letter colors (panel.js colorFor): libadwaita's light shades on dark, its dark shades on light */
+  --letter-0:light-dark(#1a5fb4,#99c1f1); --letter-1:light-dark(#c64600,#ffbe6f); --letter-2:light-dark(#813d9c,#dc8add);
+  --letter-3:light-dark(#8a6c00,#f9f06b); --letter-4:light-dark(#c01c28,#f66151); --letter-5:light-dark(#0a7287,#7bdff4);
+  --letter-6:light-dark(#865e3c,#cdab8f); --letter-7:light-dark(#c1307a,#f5a3c7);
   --sans:"Adwaita Sans","Cantarell","Inter",system-ui,sans-serif;
   --mono:"Adwaita Mono","Source Code Pro","DejaVu Sans Mono",ui-monospace,monospace;
-  color-scheme:dark;
   /* on-screen keyboard */
-  --keyboard-background:var(--headerbar); --keyboard-border:var(--shade);
+  --keyboard-background:light-dark(#ebebed,#2e2e32); --keyboard-border:var(--shade);
   --keyboard-toolbar-text:var(--fg); --keyboard-toolbar-text-active:var(--accent);
   --keyboard-toolbar-background-hover:var(--btn-hover); --keyboard-toolbar-background-selected:var(--btn);
   --keyboard-accent-color:var(--accent); --keyboard-horizontal-rule:var(--border);
-  --keycap-background:#46464a; --keycap-background-hover:#505054; --keycap-background-active:#5c5c60; --keycap-background-pressed:#5c5c60;
+  --keycap-background:light-dark(#ffffff,#46464a); --keycap-background-hover:light-dark(#f4f4f5,#505054);
+  --keycap-background-active:light-dark(#dcdcde,#5c5c60); --keycap-background-pressed:light-dark(#dcdcde,#5c5c60);
   --keycap-text:var(--fg); --keycap-text-active:var(--fg); --keycap-text-hover:var(--fg); --keycap-text-pressed:var(--fg);
   --keycap-border:transparent; --keycap-border-bottom:transparent;
-  --keycap-secondary-background:#38383c; --keycap-secondary-background-hover:#424246; --keycap-secondary-text:var(--fg);
+  --keycap-secondary-background:light-dark(#d8d8db,#38383c); --keycap-secondary-background-hover:light-dark(#cfcfd2,#424246);
+  --keycap-secondary-text:var(--fg);
   --keycap-secondary-border:transparent; --keycap-secondary-border-bottom:transparent;
   --keycap-primary-background:var(--accent-bg); --keycap-primary-background-hover:#4a90e8; --keycap-primary-text:#fff;
   --keycap-shift-text:var(--accent); --keycap-shift-color:var(--accent);
 }
+/* MathLive sets this one on the keyboard itself under prefers-color-scheme: dark, which isn't the theme here. */
+:root .ML__keyboard{--keyboard-toolbar-background-hover:var(--btn-hover)}
 html,body{min-height:100%}
 body{margin:0;background:var(--window);color:var(--fg);font:15px/1.5 var(--sans);padding-inline:16px;padding-block:0 40px}
 .wrap{max-width:980px;margin:0 auto}
@@ -58,7 +75,15 @@ math-field{display:block;width:100%;box-sizing:border-box;background:transparent
   --caret-color:var(--accent);--selection-background-color:var(--accent-soft);
   --selection-color:var(--fg);--contains-highlight-background-color:transparent;
   --primary-color:var(--accent);--text-font-family:var(--sans);
-  --placeholder-color:var(--dim);--placeholder-opacity:.6}
+  --placeholder-color:var(--dim);--placeholder-opacity:.6;
+  /* MathLive picks its own defaults for these by prefers-color-scheme, which the Theme menu can override */
+  --smart-fence-color:currentColor;--smart-fence-opacity:.6;--latex-color:var(--accent);--primary:var(--accent);
+  --text-highlight-background-color:var(--accent-soft);--highlight-text:var(--accent-soft);--contains-highlight-color:var(--accent);
+  /* the line's ☰ / right-click menu */
+  --ui-menu-bg:var(--dialog);--ui-menu-text:var(--fg);--ui-menu-bg-hover:var(--btn-hover);--ui-menu-text-hover:var(--fg);
+  --ui-menu-bg-active:var(--accent-bg);--ui-menu-text-active:#fff;--ui-menu-bg-active-muted:var(--btn-active);
+  --ui-menu-text-active-muted:var(--fg);--ui-menu-divider:1px solid var(--border);
+  --ui-menu-shadow:0 0 0 1px var(--border),0 6px 20px var(--pop-shade);--ui-text-secondary:var(--dim)}
 math-field:focus-within{outline:0}
 /* A pasted \htmlStyle{position:fixed…} or {position:absolute;top:-500px} stays inside its line instead of covering the panel. */
 math-field::part(content){contain:paint}
@@ -84,7 +109,7 @@ kbd{font:400 12px var(--mono);border-radius:4px;padding:1px 6px;background:var(-
   background:#474747;color:#fff;font:400 14px var(--sans);padding:10px 18px;border-radius:999px;box-shadow:0 2px 8px var(--shade);
   opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
 .toast.show{opacity:1}
-dialog{border:0;border-radius:14px;background:var(--dialog);color:var(--fg);box-shadow:0 0 0 1px var(--border),0 8px 24px rgb(0 0 0 / .4);
+dialog{border:0;border-radius:14px;background:var(--dialog);color:var(--fg);box-shadow:0 0 0 1px var(--border),0 8px 24px var(--pop-shade);
   width:min(640px,calc(100vw - 32px));padding:20px;box-sizing:border-box}
 dialog::backdrop{background:rgb(0 0 0 / .5)}
 dialog h2{margin:0 0 6px;font:700 17px var(--sans)}
@@ -101,7 +126,7 @@ textarea:focus-visible{outline:2px solid var(--accent)}
 .klist div span:first-child{white-space:nowrap}
 .toast button{margin-left:12px;padding:5px 10px;font-size:13px;background:rgb(255 255 255 / .15)}
 .toast.show.has-action{pointer-events:auto}
-.err{margin-top:18px;padding:14px;background:rgb(192 28 40 / .2);color:var(--danger);border-radius:12px}
+.err{margin-top:18px;padding:14px;background:light-dark(rgb(192 28 40 / .1),rgb(192 28 40 / .2));color:var(--danger);border-radius:12px}
 @media (max-width:640px){
   .row{grid-template-columns:40px minmax(0,1fr) auto}
   .num{padding-right:6px}
@@ -122,11 +147,15 @@ textarea:focus-visible{outline:2px solid var(--accent)}
 .iconbtn{padding:8px 10px;display:inline-flex;align-items:center}
 .iconbtn svg{width:16px;height:16px;fill:currentColor}
 .menu{position:absolute;right:0;top:calc(100% + 6px);z-index:30;min-width:220px;background:var(--dialog);border-radius:12px;
-  padding:6px;box-shadow:0 0 0 1px var(--border),0 6px 20px rgb(0 0 0 / .45);display:flex;flex-direction:column;gap:2px}
+  padding:6px;box-shadow:0 0 0 1px var(--border),0 6px 20px var(--pop-shade);display:flex;flex-direction:column;gap:2px}
 .menu button{background:transparent;text-align:left;font-weight:400;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:16px}
 .menu button:hover{background:var(--btn-hover)}
 .menu hr{border:0;border-top:1px solid var(--border);margin:4px 6px}
 .menu kbd{font-size:11px}
+.menu [role=group]{display:flex;flex-direction:column;gap:2px}
+.menulabel{font:400 12px var(--sans);color:var(--dim);padding:4px 12px 2px}
+.menu [role=menuitemradio]::after{content:"";width:1em;text-align:center}
+.menu [role=menuitemradio][aria-checked=true]::after{content:"✓";color:var(--accent)}
 iframe.engine{display:none}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (max-width:440px){h1 small{display:none}}

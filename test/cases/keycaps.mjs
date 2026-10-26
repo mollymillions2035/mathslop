@@ -22,4 +22,4 @@ export const PRETTY_CAP = [
   [null, null], [5, 5],
 ];
 
-export const COLOR_PALETTE = ['#99c1f1', '#ffbe6f', '#dc8add', '#f9f06b', '#f66151', '#7bdff4', '#cdab8f', '#f5a3c7'];
+export const COLOR_PALETTE = [0, 1, 2, 3, 4, 5, 6, 7].map(i => `var(--letter-${i})`);   // panel.css defines each for light and dark
