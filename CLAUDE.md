@@ -23,9 +23,6 @@ Rough priority order.
       a variable; single-letter units (m, s, g, h) can't be told apart from variables while typing; CE's `\to`
       doesn't convert (`\operatorname{UnitConvert}` does); exact unit answers come out as siunitx `\qty[…]`,
       which MathLive can't render; and unit names count as unknowns, so Arithmetic skips unit lines.
-5. **Light mode.** The theme is libadwaita dark only (see "Behaviour decisions" → Theme). Add a light theme
-      (libadwaita light palette), following `prefers-color-scheme` by default; the letter colors and MathLive's
-      styling need light-background variants too.
 
 ## Load it
 
@@ -205,8 +202,9 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
   *displayed* LaTeX to calculator-style labels (x², √x, ∫f(x)dx) while keeping the original `insert`.
   MathLive's spoken label for a key is its raw insert or HTML (`#@^2}`, `&divide;`) and a keycap's own
   `aria-label` is ignored, so a MutationObserver relabels rendered keys (`spokenKey`).
-- **Letter colors** (toggle): same letter = same color on every line and in answers; e, i, π stay white.
-  Implemented by a MutationObserver on each math-field's (open) shadow root, recoloring `.ML__mathit`.
+- **Letter colors** (toggle): same letter = same color on every line and in answers; e, i, π keep the text color.
+  Implemented by a MutationObserver on each math-field's (open) shadow root, recoloring `.ML__mathit` with
+  `var(--letter-N)` (panel.css), so a theme change recolors without a repaint.
 - **Shortcuts:** Enter new line · ↑/↓ and ←/→ at edges move between lines · Backspace on empty line deletes
   it · Esc Esc clears the pad (with Undo toast) · Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y undo and redo across the
   pad · Ctrl+/ opens the shortcut guide. Tab is not intercepted: at the end of a line it goes on in page order
@@ -231,9 +229,17 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
 - Esc is *not* intercepted while a `\command` is being typed (MathLive's LaTeX mode), or when a dialog/menu is open.
   Esc presses less than 1 s after one that closed a line's menu don't count toward Esc Esc (`menuEscAt`):
   pressing Esc a few times to get out of a menu mustn't clear the pad.
-- Theme: libadwaita dark only (GNOME). Fonts: Adwaita Sans / Adwaita Mono with fallbacks.
+- **Theme**: libadwaita light and dark (GNOME). ☰ → Theme: Same as system (default), Dark, Light; no permission
+  needed. Every color token in panel.css is `light-dark(light, dark)` and follows `color-scheme`: `light dark` on
+  `:root`, pinned by `data-theme` on `<html>` (`applyTheme` in panel.js) when the user picks one. That's why
+  `minimum_chrome_version` is 123. "System" is Chrome's Appearance setting (which follows the OS by default),
+  live. MathLive picks some of its own colors by `prefers-color-scheme`, which a forced theme doesn't change, so
+  panel.css sets them all on `math-field` (smart fences, LaTeX mode, highlights, its ☰ menu's `--ui-menu-*`)
+  and on `.ML__keyboard` (toolbar hover). Its IME composition colors still follow the system. The theme is
+  applied right after storage loads, so a forced theme opposite to the system can flash for a frame on open.
+  Fonts: Adwaita Sans / Adwaita Mono with fallbacks.
 - Storage: `chrome.storage.local`, key `mathslop.v1` → `{ lines, mode, varColors, angle, places, order,
-  copyFmt, copyAns }`. Missing fields fall back to defaults, so older saved data still loads.
+  copyFmt, copyAns, theme }`. Missing fields fall back to defaults, so older saved data still loads.
   A save that doesn't fit (10 MB) shows a toast once per run of failed saves (`saveFailed`), not on every keystroke.
   Falls back to localStorage if panel.html is opened outside the extension.
 

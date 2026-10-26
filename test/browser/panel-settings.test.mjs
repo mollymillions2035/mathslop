@@ -17,10 +17,10 @@ const ui = p => p.run(() => ({
 const DEFAULTS = { mode: 'off', angle: 'rad', places: 'auto', order: 'exact', colors: 'false' };
 
 describe('saving', () => {
-  test('an edit saves all 8 fields after the debounce', async t => {
+  test('an edit saves all 9 fields after the debounce', async t => {
     const p = await panel(t, ctx, { lines: ['1'], mode: 'off' });
     await clickLine(p, 0); await p.type('2'); await sleep(400);
-    assert.deepEqual(await savedState(p), { lines: ['12'], mode: 'off', varColors: false, angle: 'rad', places: 'auto', order: 'exact', copyFmt: 'latex', copyAns: true });
+    assert.deepEqual(await savedState(p), { lines: ['12'], mode: 'off', varColors: false, angle: 'rad', places: 'auto', order: 'exact', copyFmt: 'latex', copyAns: true, theme: 'system' });
   });
   test('a save that doesn\'t fit says so once, with no console error, until a save works again', async t => {
     const p = await panel(t, ctx, { lines: ['1'], mode: 'off' });
@@ -65,6 +65,43 @@ describe('restoring bad or old saved data', () => {
       before: 'chrome.storage.local.get = () => Promise.reject(new Error("broken"));' });
     const got = await ui(p);
     assert.equal(got.mode, 'off'); assert.equal(got.lines, 11);
+  });
+});
+
+describe('theme', () => {
+  // What the panel looks like: the page background and a colored letter, under the given system scheme.
+  const look = async (p, system) => {
+    await p.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: system }] });
+    return p.run(() => {
+      const sp = document.querySelector('.row math-field').shadowRoot.querySelector('.ML__mathit');
+      return { bg: getComputedStyle(document.body).backgroundColor, letter: getComputedStyle(sp).color,
+        attr: document.documentElement.dataset.theme ?? null,
+        checked: [...document.querySelectorAll('[data-set-theme][aria-checked=true]')].map(b => b.dataset.setTheme) };
+    });
+  };
+  const LIGHT = 'rgb(250, 250, 251)', DARK = 'rgb(34, 34, 38)';
+  test('default: the system\'s, following it live, letter colors too', async t => {
+    const p = await panel(t, ctx, { lines: ['x'], mode: 'off', varColors: true });
+    const l = await look(p, 'light'), d = await look(p, 'dark');
+    assert.deepEqual([l.bg, l.attr, l.checked], [LIGHT, null, ['system']]);
+    assert.deepEqual([d.bg, d.attr], [DARK, null]);
+    assert.equal(l.letter, 'rgb(26, 95, 180)'); assert.equal(d.letter, 'rgb(153, 193, 241)');
+  });
+  for (const [th, bg] of [['dark', DARK], ['light', LIGHT]]) test(`${th} from the menu: whatever the system, saved`, async t => {
+    const p = await panel(t, ctx, { lines: ['x'], mode: 'off' });
+    await p.click('#btn-menu'); await p.click(`[data-set-theme=${th}]`); await sleep(400);
+    for (const sys of ['light', 'dark']) assert.equal((await look(p, sys)).bg, bg, sys + ' system');
+    assert.deepEqual((await look(p, 'light')).checked, [th]);
+    assert.equal(await p.run(() => document.getElementById('menu').hidden), true, 'the menu closes');
+    assert.equal((await savedState(p)).theme, th);
+    await p.click('#btn-menu'); await p.click('[data-set-theme=system]'); await sleep(400);
+    assert.deepEqual([(await look(p, 'light')).bg, (await look(p, 'dark')).bg], [LIGHT, DARK]);
+    assert.equal((await savedState(p)).theme, 'system');
+  });
+  test('an unknown saved theme → the system\'s', async t => {
+    const p = await panel(t, ctx, { lines: ['x'], mode: 'off', theme: 'sepia' });
+    assert.deepEqual((await look(p, 'light')).checked, ['system']);
+    assert.equal((await look(p, 'light')).attr, null);
   });
 });
 

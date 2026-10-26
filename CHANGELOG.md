@@ -4,6 +4,18 @@ What changed in each version of mathslop. Version numbers follow semver (see "Ve
 The Chrome Web Store has no release-notes field, so the new features of the current minor series are summarized
 at the top of the store description (store/listing.md).
 
+## 1.4.0 (2026-10-25)
+
+### Added
+
+- A light theme (libadwaita light). ☰ → Theme: Same as system (the default), Dark or Light. "Same as system"
+  follows Chrome's Appearance setting, which follows the system by default, and switches live. The letter
+  colors and MathLive's line menu and keyboard follow the theme too.
+
+### Changed
+
+- Needs Chrome 123 or later (was 116), for CSS `light-dark()`.
+
 ## 1.3.2 (2026-10-25)
 
 1.3.1 never reached the Chrome Web Store (its review was cancelled for this release), so on the store 1.3.2

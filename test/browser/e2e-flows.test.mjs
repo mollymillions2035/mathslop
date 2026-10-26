@@ -63,8 +63,9 @@ describe('flows', () => {
     await p.click('.segrow [data-mode=full]');
     await p.click('#btn-menu'); await p.click('#btn-export'); await sleep(100);
     await p.click('#exp [data-fmt=text]'); await p.click('#exp-ans'); await p.click('#exp-cancel');
+    await p.click('#btn-menu'); await p.click('[data-set-theme=light]');
     await settled(p);
-    const want = { lines: ['\\frac18', '\\sqrt2', '\\frac14+\\frac14'], mode: 'full', varColors: true, angle: 'deg', places: 2, order: 'decimal', copyFmt: 'text', copyAns: false };
+    const want = { lines: ['\\frac18', '\\sqrt2', '\\frac14+\\frac14'], mode: 'full', varColors: true, angle: 'deg', places: 2, order: 'decimal', copyFmt: 'text', copyAns: false, theme: 'light' };
     assert.deepEqual(await savedState(p), want);
     await p.reload(); await p.ready();
     assert.deepEqual(await p.run(() => ({
@@ -72,7 +73,8 @@ describe('flows', () => {
       angle: document.querySelector('[data-angle][aria-pressed=true]').dataset.angle,
       places: document.getElementById('opt-places').value, order: document.getElementById('opt-order').value,
       colors: document.getElementById('btn-colors').getAttribute('aria-pressed'),
-    })), { mode: 'full', angle: 'deg', places: '2', order: 'decimal', colors: 'true' });
+      theme: document.documentElement.dataset.theme,
+    })), { mode: 'full', angle: 'deg', places: '2', order: 'decimal', colors: 'true', theme: 'light' });
     assert.equal(await p.run(() => document.getElementById('ans-warn').open), false, 'no warning for a restored mode');
     const a = await settled(p);
     assert.equal(a[1], '≈1.41', '2 places');

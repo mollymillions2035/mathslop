@@ -58,12 +58,8 @@ A multiline math scratchpad in the side panel. Optional live answers, works offl
 ```
 mathslop is a scratchpad for writing math in Chrome's side panel, next to whatever you're working from: an online lesson, a PDF, a homework page. Type expressions the way they look on paper, one per line, instead of drawing with a mouse or writing x^2/(3+y) in plain text.
 
-New in 1.3:
-- Click an answer to use it in the line you're editing; type ans for the answer above.
-- Define your own functions: f(x) := x^2 + 1, then f(3).
-- Answer options: degrees or radians, decimal places, exact or decimal first.
-- Undo and redo for the whole pad.
-- Copy the whole pad as LaTeX or plain text, with or without answers.
+New in 1.4:
+- A light theme. The panel follows your system's light or dark setting, or pick one from the ☰ menu.
 
 Features:
 
@@ -81,6 +77,7 @@ Features:
 - Colors: give each letter its own color, the same on every line and in the answers, so you can follow a variable through your working.
 - Copy one line or the whole pad as LaTeX, or the whole pad as plain text, with or without answers. Import LaTeX to replace or add to the pad.
 - Keyboard shortcuts: Enter for a new line, arrow keys to move between lines, Backspace on an empty line to delete it, Ctrl+Z to undo anything on the pad, Esc twice to clear it. Ctrl+/ shows the full list.
+- Light and dark themes (GNOME's Adwaita look), following your system unless you pick one.
 - The pad saves itself and is still there next time you open the panel.
 
 Privacy: everything stays on your device. The pad is kept in Chrome's local extension storage, nothing is synced or sent anywhere, and there are no accounts, ads or analytics. The extension has no network access at all, so it also works offline.
@@ -89,7 +86,6 @@ Good to know:
 - Click the toolbar icon to open the side panel (pin it from the puzzle-piece menu first).
 - Answers work out and simplify expressions, but they don't solve equations: a line like x^2 - 4 = 0 gets no answer.
 - Answers come from the Compute Engine library. Angles are in radians unless you switch to Deg, and some lines just won't get an answer. Check anything that matters.
-- Dark theme only.
 
 Free, open source and public domain (CC0): https://github.com/mollymillions2035/mathslop
 ```

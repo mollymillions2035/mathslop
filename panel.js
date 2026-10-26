@@ -39,6 +39,16 @@
   };
   const saved = await store.load();
 
+  // ---------- theme: the system's (Chrome's Appearance setting), or always dark / light ----------
+  const THEMES = ['system', 'dark', 'light'];
+  let theme = THEMES.includes(saved?.theme) ? saved.theme : 'system';
+  function applyTheme(){
+    if (theme === 'system') delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = theme;
+    document.querySelectorAll('[data-set-theme]').forEach(b => b.setAttribute('aria-checked', b.dataset.setTheme === theme));
+  }
+  applyTheme();
+
   // ---------- keyboard: show real letters instead of placeholder boxes ----------
   function prettyLatex(l){
     if (typeof l !== 'string' || !/#[@?0]/.test(l)) return null;
@@ -97,7 +107,8 @@
   let varColors = saved?.varColors ?? false;
   // Common variable letters come first so they land on different colors.
   const VAR_ORDER = 'xyzabcntkmpqrsuvwdfghjloe';
-  const VAR_PALETTE = ['#99c1f1','#ffbe6f','#dc8add','#f9f06b','#f66151','#7bdff4','#cdab8f','#f5a3c7'];
+  // --letter-0…7 in panel.css, so a theme change recolors without a repaint
+  const VAR_PALETTE = [0, 1, 2, 3, 4, 5, 6, 7].map(i => `var(--letter-${i})`);
   function colorFor(ch){
     const k = ch.toLowerCase(); let i = VAR_ORDER.indexOf(k);
     if (i < 0) i = [...k].reduce((h, c) => h * 31 + c.codePointAt(0), 7);
@@ -133,7 +144,7 @@
   let copyAns = saved?.copyAns ?? true;
   let saveFailed = false;   // said once per run of failed saves, not on every keystroke
   function persist(){
-    store.save({ lines: fields().map(f => f.value), mode, varColors, angle, places, order, copyFmt, copyAns }).then(ok => {
+    store.save({ lines: fields().map(f => f.value), mode, varColors, angle, places, order, copyFmt, copyAns, theme }).then(ok => {
       if (!ok && !saveFailed) toast('The pad is too big to save — remove some lines');
       saveFailed = !ok;
     });
@@ -675,6 +686,8 @@
 
   menuAction('btn-copy', () => copyText(portable(fields().map(f => f.value).filter(Boolean).join('\n')), 'All lines copied as LaTeX'));
   menuAction('btn-clear', () => clearAll());
+  for (const b of menu.querySelectorAll('[data-set-theme]'))
+    b.addEventListener('click', () => { openMenu(false); bMenu.focus(); theme = b.dataset.setTheme; applyTheme(); persist(); });
 
   function clearAll(){
     if (menuBlocks()) return;
@@ -844,7 +857,7 @@
   hist.reset();
 
   // Tests only (test/browser/cdp.mjs defines this global before panel.js runs; nothing in the extension does).
-  if (globalThis.__mathslopTest) globalThis.__mathslopTest.panel = { KEY, SAMPLE, PLACES, store, portable, spoken, isSum,
+  if (globalThis.__mathslopTest) globalThis.__mathslopTest.panel = { KEY, SAMPLE, PLACES, THEMES, store, portable, spoken, isSum,
     toText, parseImport, appendedLines, answerParts, prettyLatex, prettyCap, spokenKey, colorFor, hist, WATCHDOG_MS, inflight, slowKeys,
     lineKey, lineResult, INVALID_TIP, SLOW_TIP, MODIFIERS, NO_SHORTCUT, ansOut,
     get mode(){ return mode; }, get order(){ return order; }, get engine(){ return engine; }, get reqId(){ return reqId; },
