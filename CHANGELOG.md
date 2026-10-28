@@ -4,6 +4,14 @@ What changed in each version of mathslop. Version numbers follow semver (see "Ve
 The Chrome Web Store has no release-notes field, so the new features of the current minor series are summarized
 at the top of the store description (store/listing.md).
 
+## 1.5.0 (unreleased)
+
+### Changed
+
+- "Answers" is now called **Evaluate** (Off / Arithmetic / Algebra), and each line's output is its result:
+  "Include results" in Copy all…, "Click a result" in the guide, "Turn on Evaluate?" when turning it on. The
+  pad works lines out and simplifies them; it doesn't solve them. `ans` and saved settings are unchanged.
+
 ## 1.4.0 (2026-10-26)
 
 ### Added

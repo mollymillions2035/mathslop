@@ -327,7 +327,7 @@
       const parts = answerParts(resultOf.get(row)), part = e.target.closest('.part');
       if (!parts.length || !part) return;
       const p = parts[+part.dataset.i] || parts[0];
-      if (e.shiftKey) copyText(portable(p.latex), 'Answer copied as LaTeX');
+      if (e.shiftKey) copyText(portable(p.latex), 'Result copied as LaTeX');
       else useAnswer(row, p.latex, p.group);
     };
     res.addEventListener('click', pick);
@@ -574,7 +574,7 @@
       let said = parts[i].latex; try { said = MathLive.convertLatexToSpeakableText(parts[i].rel + ' ' + spoken(parts[i].latex)); } catch {}
       el.setAttribute('aria-label', said + '. Enter puts it in the line you were editing, Shift+Enter copies it.');
     });
-    if (parts.length) out.title = 'Click to put this answer in the line you\'re editing. Shift+click to copy it.';
+    if (parts.length) out.title = 'Click to put this result in the line you\'re editing. Shift+click to copy it.';
     paint(out);
   }
   function applyResults(results){ rows().forEach((r, i) => showResult(r, results[i] ?? null)); }
@@ -596,10 +596,10 @@
     t = setTimeout(() => { evaluateAll(); persist(); }, 220);
   }
 
-  // ---------- answers mode ----------
+  // ---------- Evaluate mode ----------
   const MODE_HINT = {
-    off:   '<b>Off</b> — no answers, just a place to write math.',
-    arith: '<b>Arithmetic</b> — answers lines that are only numbers, or letters you gave a value with <b>:=</b>. Lines with unknowns like 2x+3x are left for you.',
+    off:   '<b>Off</b> — no results, just a place to write math.',
+    arith: '<b>Arithmetic</b> — evaluates lines that are only numbers, or letters you gave a value with <b>:=</b>. Lines with unknowns like 2x+3x are left for you.',
     full:  '<b>Algebra</b> — also simplifies lines with unknowns: 2x+3x becomes 5x, d/dx x³ becomes 3x².'
   };
   const segBtns = [...document.querySelectorAll('.segrow .seg button')];
@@ -610,7 +610,7 @@
     $('ansopts').hidden = mode === 'off';
     schedule();
   }
-  // Turning answers on from Off asks first (see CLAUDE.md, "Answers modes"). Switching between
+  // Turning Evaluate on from Off asks first (see CLAUDE.md, "Evaluate modes"). Switching between
   // Arithmetic and Algebra, or restoring a saved mode, doesn't.
   const ansDlg = $('ans-warn'); let ansPending = null;
   function requestMode(m){
@@ -763,7 +763,7 @@
   function renderExport(){
     fmtBtns.forEach(b => b.setAttribute('aria-pressed', b.dataset.fmt === copyFmt));
     expAns.disabled = mode === 'off'; expAns.checked = copyAns && mode !== 'off';
-    $('exp-note').textContent = mode === 'off' ? 'Answers are off, so there are none to include.' : '';
+    $('exp-note').textContent = mode === 'off' ? 'Evaluate is off, so there are no results to include.' : '';
     expText.value = exportText();
   }
   fmtBtns.forEach(b => b.addEventListener('click', () => { copyFmt = b.dataset.fmt; renderExport(); persist(); }));
@@ -771,7 +771,7 @@
   menuAction('btn-export', () => { renderExport(); expDlg.showModal(); });
   $('exp-cancel').addEventListener('click', () => expDlg.close());
   $('exp-copy').addEventListener('click', () => {
-    const what = (copyFmt === 'latex' ? 'as LaTeX' : 'as plain text') + (expAns.checked ? ' with answers' : '');
+    const what = (copyFmt === 'latex' ? 'as LaTeX' : 'as plain text') + (expAns.checked ? ' with results' : '');
     expDlg.close(); copyText(expText.value, 'All lines copied ' + what);
   });
 

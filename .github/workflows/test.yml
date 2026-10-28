@@ -34,7 +34,7 @@ jobs:
       # Chrome for Testing still does. A CI-time download, not a project dependency.
       - name: Install Chrome for Testing (stable)
         run: |
-          out=$(npx --yes @puppeteer/browsers@2 install chrome@stable --path "$RUNNER_TEMP/browsers")
+          out=$(npx --yes @puppeteer/browsers@3 install chrome@stable --path "$RUNNER_TEMP/browsers")
           echo "$out"
           echo "CHROMIUM=$(echo "$out" | tail -1 | awk '{print $2}')" >> "$GITHUB_ENV"
       - run: sudo apt-get update && sudo apt-get install -y zip

@@ -20,7 +20,7 @@
       </button>
       <div class="menu" id="menu" role="menu" hidden>
         <button id="btn-copy" type="button" role="menuitem">Copy all as LaTeX</button>
-        <button id="btn-export" type="button" role="menuitem" title="Copy all lines as LaTeX or plain text, with or without answers">Copy all…</button>
+        <button id="btn-export" type="button" role="menuitem" title="Copy all lines as LaTeX or plain text, with or without results">Copy all…</button>
         <button id="btn-import" type="button" role="menuitem">Import LaTeX…</button>
         <button id="btn-keys" type="button" role="menuitem">Keyboard shortcuts <kbd>Ctrl /</kbd></button>
         <hr>
@@ -36,7 +36,7 @@
     </div>
   </div>
   <div class="segrow">
-    <span class="seglabel" id="seg-label">Answers</span>
+    <span class="seglabel" id="seg-label">Evaluate</span>
     <div class="seg" role="group" aria-labelledby="seg-label"><button type="button" data-mode="off" title="No results">Off</button><button type="button" data-mode="arith" title="Only lines with no unknowns: 1+1, ∫₀^π sin x dx, a+1 after a≔3">Arithmetic</button><button type="button" data-mode="full" title="Also simplify expressions with unknowns: 2x+3x = 5x">Algebra</button></div>
   </div>
 </div></header>
@@ -45,10 +45,10 @@
   <p class="modehint" id="modehint" aria-live="polite"></p>
   <div class="ansopts" id="ansopts" hidden>
     <div class="seg" role="group" aria-label="Angles"><button type="button" data-angle="rad" title="Angles in radians: sin(π/6) = 1/2">Rad</button><button type="button" data-angle="deg" title="Angles in degrees: sin(30) = 1/2. Derivatives and integrals of sin, cos… are then in degrees too.">Deg</button></div>
-    <label class="opt">Decimals <select id="opt-places" title="Decimal places for rounded answers. Auto shows all the digits the engine has.">
+    <label class="opt">Decimals <select id="opt-places" title="Decimal places for rounded results. Auto shows all the digits the engine has.">
       <option value="auto">auto</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option><option>10</option>
     </select></label>
-    <label class="opt"><span class="sr-only">Answer order</span><select id="opt-order" title="Which form of an answer comes first">
+    <label class="opt"><span class="sr-only">Result order</span><select id="opt-order" title="Which form of a result comes first">
       <option value="exact">exact first</option><option value="decimal">decimal first</option>
     </select></label>
   </div>
@@ -79,20 +79,20 @@
     <div><span><kbd>:</kbd> <kbd>=</kbd></span><span>Assign a variable, e.g. a ≔ 3</span></div>
     <div><span><kbd>\</kbd></span><span>Type a LaTeX command (\alpha, \int…); <kbd>Esc</kbd> exits it</span></div>
     <div><span><kbd>sqrt</kbd> <kbd>pi</kbd> <kbd>sin</kbd></span><span>Typed names turn into symbols</span></div>
-    <div><span><kbd>ans</kbd></span><span>The answer of the nearest line above that has one</span></div>
+    <div><span><kbd>ans</kbd></span><span>The result of the nearest line above that has one</span></div>
     <div><span><kbd>f(x)</kbd> <kbd>:</kbd><kbd>=</kbd></span><span>Define a function, e.g. f(x) ≔ x²+1, then use it: f(3)</span></div>
-    <h3>Answers (top bar)</h3>
-    <div><span>Off</span><span>No answers, just writing</span></div>
+    <h3>Evaluate (top bar)</h3>
+    <div><span>Off</span><span>No results, just writing</span></div>
     <div><span>Arithmetic</span><span>Only lines with no unknowns: 1+1, ∫₀^π sin x dx, a+1 after a ≔ 3</span></div>
     <div><span>Algebra</span><span>Also simplifies unknowns: 2x+3x = 5x</span></div>
     <div><span>Rad / Deg</span><span>Angle unit for sin, cos, tan and their inverses</span></div>
-    <div><span>Decimals</span><span>Places for rounded answers (≈), and exact or decimal first</span></div>
-    <div><span>Click an answer</span><span>Put it in the line you were editing (or a new line). <kbd>Shift</kbd>+click copies it. From the keyboard: <kbd>Tab</kbd> to it, then <kbd>Enter</kbd></span></div>
+    <div><span>Decimals</span><span>Places for rounded results (≈), and exact or decimal first</span></div>
+    <div><span>Click a result</span><span>Put it in the line you were editing (or a new line). <kbd>Shift</kbd>+click copies it. From the keyboard: <kbd>Tab</kbd> to it, then <kbd>Enter</kbd></span></div>
     <div><span>can't read</span><span>The line has a typo or an empty box</span></div>
     <div><span>took too long</span><span>Skipped after 1.5 s; edit the line to try again</span></div>
     <h3>Pad</h3>
     <div><span><kbd>Ctrl</kbd> <kbd>/</kbd></span><span>This guide</span></div>
-    <div><span>☰ menu</span><span>Copy all as LaTeX, or as plain text and with answers (Copy all…), import, theme, clear</span></div>
+    <div><span>☰ menu</span><span>Copy all as LaTeX, or as plain text and with results (Copy all…), import, theme, clear</span></div>
   </div>
   <div class="drow"><button id="keys-close" type="button" autofocus>Close</button></div>
 </dialog>
@@ -112,7 +112,7 @@
   <h2 id="exp-title">Copy all lines</h2>
   <div class="exopts">
     <div class="seg" role="group" aria-label="Format"><button type="button" data-fmt="latex">LaTeX</button><button type="button" data-fmt="text" title="AsciiMath-style plain text, for places that don't read LaTeX">Plain text</button></div>
-    <label class="check"><input type="checkbox" id="exp-ans"> Include answers</label>
+    <label class="check"><input type="checkbox" id="exp-ans"> Include results</label>
   </div>
   <p class="exnote" id="exp-note"></p>
   <textarea id="exp-text" readonly spellcheck="false" aria-label="Text to copy"></textarea>
@@ -123,11 +123,11 @@
 </dialog>
 
 <dialog id="ans-warn" aria-labelledby="ans-warn-title" aria-describedby="ans-warn-text">
-  <h2 id="ans-warn-title">Enable answers?</h2>
-  <p id="ans-warn-text">Are you sure you want to enable answers? This feature is here for your convenience while learning, but if you are still learning arithmetic or algebra it is recommended to keep answers disabled to reinforce learning.</p>
+  <h2 id="ans-warn-title">Turn on Evaluate?</h2>
+  <p id="ans-warn-text">Are you sure you want to see results? This feature is here for your convenience while learning, but if you are still learning arithmetic or algebra it is recommended to keep Evaluate off to reinforce learning.</p>
   <div class="drow">
-    <button id="ans-cancel" type="button" autofocus>Keep answers off</button>
-    <button id="ans-ok" type="button">Enable answers</button>
+    <button id="ans-cancel" type="button" autofocus>Keep Evaluate off</button>
+    <button id="ans-ok" type="button">Show results</button>
   </div>
 </dialog>
 

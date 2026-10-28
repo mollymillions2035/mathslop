@@ -1,4 +1,4 @@
-// panel controls: the answers mode and its warning, the ☰ menu, Copy all, the Keyboard button.
+// panel controls: the Evaluate mode and its warning, the ☰ menu, Copy all, the Keyboard button.
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { useBrowser, panel, values, focused, settled, toastText, clickLine, sleep } from './fixture.mjs';
@@ -7,8 +7,8 @@ const ctx = useBrowser();
 const mode = p => p.run(() => document.querySelector('.segrow [aria-pressed=true]').dataset.mode);
 const warnOpen = p => p.run(() => document.getElementById('ans-warn').open);
 
-describe('answers mode', () => {
-  test('Off → Arithmetic asks first; Esc and "Keep answers off" keep it Off', async t => {
+describe('Evaluate mode', () => {
+  test('Off → Arithmetic asks first; Esc and "Keep Evaluate off" keep it Off', async t => {
     const p = await panel(t, ctx, { lines: ['1+1'], mode: 'off' });
     await p.click('.segrow [data-mode=arith]'); await sleep(80);
     assert.equal(await warnOpen(p), true);
@@ -99,12 +99,12 @@ describe('Copy all…', () => {
     const p = await panel(t, ctx, { lines: ['1'], mode: 'off' });
     assert.equal(await p.run(() => document.getElementById('exp-copy').hasAttribute('aria-pressed')), false);
   });
-  test('with answers Off there are none to include', async t => {
+  test('with Evaluate Off there are no results to include', async t => {
     const p = await panel(t, ctx, { lines: ['1+1'], mode: 'off' });
     await open(p);
     assert.deepEqual(await p.run(() => [document.getElementById('exp-ans').disabled, document.getElementById('exp-ans').checked,
       document.getElementById('exp-note').textContent, document.getElementById('exp-text').value]),
-      [true, false, 'Answers are off, so there are none to include.', '1+1']);
+      [true, false, 'Evaluate is off, so there are no results to include.', '1+1']);
     await p.click('#exp-copy'); await sleep(150);
     assert.equal(await toastText(p), 'All lines copied as LaTeX');
   });

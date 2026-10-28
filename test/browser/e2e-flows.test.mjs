@@ -15,7 +15,7 @@ describe('flows', () => {
     assert.ok((await answers(p)).every(a => a === ''), 'answers start off');
     await p.click('.segrow [data-mode=arith]'); await sleep(100);
     assert.equal(await p.run(() => document.getElementById('ans-warn').open), true, 'the warning comes first');
-    assert.equal(await p.run(() => document.activeElement.id), 'ans-cancel', '"Keep answers off" is focused');
+    assert.equal(await p.run(() => document.activeElement.id), 'ans-cancel', '"Keep Evaluate off" is focused');
     await p.click('#ans-ok');
     const a = await settled(p);
     assert.deepEqual([a[2], a[3], a[4], a[5], a[7], a[10]], ['=5', '=2', '=5050', '=21 | =0.5', '=0', '=10']);   // ½ reads "21": MathLive puts the denominator first in the DOM
