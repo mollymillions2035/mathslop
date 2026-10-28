@@ -48,7 +48,7 @@ describe('copying', () => {
     assert.equal(await toastText(p), 'Line copied as LaTeX');
     assert.equal(await clipboard(p), 'e^{i\\pi}+\\sqrt{-4}');
     await p.click('.row .res .part', { shift: true }); await sleep(150);
-    assert.equal(await toastText(p), 'Answer copied as LaTeX');
+    assert.equal(await toastText(p), 'Result copied as LaTeX');
     assert.equal(await clipboard(p), '-1+2i', 'CE\'s \\imaginaryI copied as i');
   });
   test('without the clipboard API: the copy-command fallback; with neither, a hint', async t => {

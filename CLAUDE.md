@@ -115,7 +115,9 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
 
 ## Behaviour decisions (so they don't get "fixed" by accident)
 
-- **Answers modes:** Off / Arithmetic / Algebra. Arithmetic answers a line only if it has no unknowns
+- **Evaluate modes:** Off / Arithmetic / Algebra (top-bar label **Evaluate**; each line's output is its *result* in
+  the UI, never "answer": the pad works lines out and simplifies them but doesn't solve them; the code still says
+  answer: `ans`, `answerParts`, `#ans-warn`). Arithmetic answers a line only if it has no unknowns
   (`expr.unknowns` is empty *before* evaluating, so letters assigned earlier with `:=` count as known).
   Algebra also simplifies symbolic lines (2x+3x → 5x). `:=` lines are evaluated in every mode, but only
   for a letter (x, D, N, Δ, Β, Γ: any single Latin or Greek letter except the constants e, i, π, γ, φ, even
@@ -128,8 +130,8 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
   (`x_1 := 3`) is refused too: CE accepts it but never uses the value, and so is `x_{1:=3}` (`:=` typed
   inside the subscript), which CE can't parse. A LaTeX comment (`%` to the end of the line, not `\%`) is
   dropped before parsing, so an imported `% worksheet` line gets nothing, not CE's "Nothing".
-- **Answers default to Off**, and turning them on from Off shows a warning dialog (`#ans-warn`) suggesting
-  learners keep them off; "Keep answers off" is the focused default and Esc cancels. Deliberate: the pad is
+- **Evaluate defaults to Off**, and turning it on from Off shows a warning dialog (`#ans-warn`) suggesting
+  learners keep it off; "Keep Evaluate off" is the focused default and Esc cancels. Deliberate: the pad is
   meant for learning. No warning when switching Arithmetic ↔ Algebra or when a saved mode is restored.
 - Decimal shown with `=` when the value is rational (½ = 0.5, 22/7 = 3.\overline{142857}), `≈` only when
   rounded (√2, π, 1/97 whose repetend is too long to find). A repetend Compute Engine finds is parsed back
@@ -154,9 +156,9 @@ To add a new engine feature (e.g. plotting): add a new message `type` in sandbox
   and e^{0.5} give only a decimal in CE 0.161 (0.133 gave √2, π/6, √e): a decimal argument makes a float.
 - Relations (`=`, `<`, `:=`, `⊃`, `∣`, …) and other true/false lines never get an answer column, and
   equations are not solved.
-- **Answer options** (shown only when answers are on): Rad/Deg (`ce.angularUnit`, so d/dx sin x in Deg is
+- **Result options** (shown only when Evaluate is on): Rad/Deg (`ce.angularUnit`, so d/dx sin x in Deg is
   π cos x / 180), Decimals (auto, 0–10), and exact first / decimal first. The second form is dimmed.
-- **Click an answer** to insert that part (exact or decimal) at the caret of the line last edited, in
+- **Click a result** to insert that part (exact or decimal) at the caret of the line last edited, in
   brackets if it's a sum, complex or negative and the line isn't empty (the engine's `group` for the exact
   part; for the decimal part, `isSum()`: a + or − outside braces, so x+1.414… and 0.3̅+0.3̅i count). Clicking a line's own answer (or
   with no line edited yet) starts a new line below with it. Shift+click copies it as LaTeX. Each part is

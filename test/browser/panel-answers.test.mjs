@@ -1,4 +1,4 @@
-// panel answers: markers, tips, labels and re-rendering (CLAUDE.md "Markers", "Click an answer").
+// panel answers: markers, tips, labels and re-rendering (CLAUDE.md "Markers", "Click a result").
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { useBrowser, panel, answers, settled, sleep } from './fixture.mjs';
@@ -61,7 +61,7 @@ describe('rendering', () => {
     // "approx 1.41", not "approx1.41" (a space after \approx); MathLive's own words for ≈
     assert.match(labels[0], /^\s*approx 1\.41\. Enter puts it in the line you were editing, Shift\+Enter copies it\.$/);
     assert.match(labels[1], /with 3 repeating/);
-    assert.equal(await p.run(() => document.querySelector('.row .res').title), 'Click to put this answer in the line you\'re editing. Shift+click to copy it.');
+    assert.equal(await p.run(() => document.querySelector('.row .res').title), 'Click to put this result in the line you\'re editing. Shift+click to copy it.');
   });
   test('an answer MathLive can\'t render leaves the row empty, nothing thrown', async t => {
     const p = await panel(t, ctx, { lines: ['1'], mode: 'arith' }, { hook: true, fake: {} });

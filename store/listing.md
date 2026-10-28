@@ -50,7 +50,7 @@ mathslop
 **Summary** (manifest `description`, max 132 characters, plain text)
 
 ```
-A multiline math scratchpad in the side panel. Optional live answers, works offline.
+A multiline math scratchpad in the side panel. Optional live results, works offline.
 ```
 
 **Description** (plain text, paste as is)
@@ -58,24 +58,24 @@ A multiline math scratchpad in the side panel. Optional live answers, works offl
 ```
 mathslop is a scratchpad for writing math in Chrome's side panel, next to whatever you're working from: an online lesson, a PDF, a homework page. Type expressions the way they look on paper, one per line, instead of drawing with a mouse or writing x^2/(3+y) in plain text.
 
-New in 1.4:
-- A light theme. The panel follows your system's light or dark setting, or pick one from the ☰ menu.
+New in 1.5:
+- Answers is now called Evaluate, and each line's output its result: it works lines out and simplifies them, but doesn't solve them.
 
 Features:
 
 - A multiline editor built on MathLive. Type / for a fraction, ^ and _ for superscripts and subscripts, and names like sqrt, pi or sin turn into symbols. A backslash starts a LaTeX command (\alpha, \int).
 - An on-screen keyboard for fractions, roots, powers, integrals, Greek letters and more, with calculator-style labels (x², √x) instead of placeholder boxes.
-- Optional answers next to each line, in three modes:
-    Off: no answers, just writing. This is the default.
-    Arithmetic: answers lines with no unknowns, like 1/3 + 1/6 or the integral of sin x from 0 to π. Letters you give a value with := (a := 3) count as known on the lines below.
+- Optional Evaluate, with a result next to each line, in three modes:
+    Off: no results, just writing. This is the default.
+    Arithmetic: evaluates lines with no unknowns, like 1/3 + 1/6 or the integral of sin x from 0 to π. Letters you give a value with := (a := 3) count as known on the lines below.
     Algebra: also simplifies lines with unknowns, so 2x + 3x becomes 5x and d/dx x³ becomes 3x².
-  Turning answers on asks first, and suggests keeping them off while you're still learning the material.
-- Answers show the exact result and, where it helps, a decimal: = when the decimal is exact (1/2 = 0.5), ≈ when it's rounded (√2, π). Choose degrees or radians, how many decimal places, and whether the exact form or the decimal comes first.
-- Reuse answers: click an answer to put it into the line you're editing (Shift+click copies it), or type ans for the answer of the nearest line above.
+  Turning Evaluate on asks first, and suggests keeping them off while you're still learning the material.
+- Results show the exact form and, where it helps, a decimal: = when the decimal is exact (1/2 = 0.5), ≈ when it's rounded (√2, π). Choose degrees or radians, how many decimal places, and whether the exact form or the decimal comes first.
+- Reuse results: click a result to put it into the line you're editing (Shift+click copies it), or type ans for the result of the nearest line above.
 - Functions: define one with := (f(x) := x² + 1) and use it on the lines below (f(3)).
-- Lines the math engine can't read are marked, so a typo doesn't look like "no answer here".
-- Colors: give each letter its own color, the same on every line and in the answers, so you can follow a variable through your working.
-- Copy one line or the whole pad as LaTeX, or the whole pad as plain text, with or without answers. Import LaTeX to replace or add to the pad.
+- Lines the math engine can't read are marked, so a typo doesn't look like "no result here".
+- Colors: give each letter its own color, the same on every line and in the results, so you can follow a variable through your working.
+- Copy one line or the whole pad as LaTeX, or the whole pad as plain text, with or without results. Import LaTeX to replace or add to the pad.
 - Keyboard shortcuts: Enter for a new line, arrow keys to move between lines, Backspace on an empty line to delete it, Ctrl+Z to undo anything on the pad, Esc twice to clear it. Ctrl+/ shows the full list.
 - Light and dark themes (GNOME's Adwaita look), following your system unless you pick one.
 - The pad saves itself and is still there next time you open the panel.
@@ -84,8 +84,8 @@ Privacy: everything stays on your device. The pad is kept in Chrome's local exte
 
 Good to know:
 - Click the toolbar icon to open the side panel (pin it from the puzzle-piece menu first).
-- Answers work out and simplify expressions, but they don't solve equations: a line like x^2 - 4 = 0 gets no answer.
-- Answers come from the Compute Engine library. Angles are in radians unless you switch to Deg, and some lines just won't get an answer. Check anything that matters.
+- Evaluate works out and simplifies expressions, but it doesn't solve equations: a line like x^2 - 4 = 0 gets no result.
+- Results come from the Compute Engine library. Angles are in radians unless you switch to Deg, and some lines just won't get a result. Check anything that matters.
 
 Free, open source and public domain (CC0): https://github.com/mollymillions2035/mathslop
 ```
@@ -120,7 +120,7 @@ Don't use `docs/screenshot.png` (840x1966); store screenshots must be 1280x800 o
 **Single purpose**
 
 ```
-A math scratchpad in Chrome's side panel: you write math line by line with a math editor and on-screen keyboard, and can optionally see the answer to each line.
+A math scratchpad in Chrome's side panel: you write math line by line with a math editor and on-screen keyboard, and can optionally see the result of each line.
 ```
 
 **Permission justifications**
@@ -134,7 +134,7 @@ The extension's only UI is a side panel page (panel.html). sidePanel registers i
 storage:
 
 ```
-Saves the user's pad (the lines of math they typed) and its settings (Answers mode, Colors, angle unit, decimal places, answer order and the Copy all format) with chrome.storage.local, so the pad is still there the next time the panel opens. Stored only on the device; nothing is synced or sent anywhere.
+Saves the user's pad (the lines of math they typed) and its settings (Evaluate mode, Colors, angle unit, decimal places, result order and the Copy all format) with chrome.storage.local, so the pad is still there the next time the panel opens. Stored only on the device; nothing is synced or sent anywhere.
 ```
 
 There are no host permissions, so no host permission justification.
@@ -162,12 +162,12 @@ Free, Public, all regions.
 
 ## Test instructions tab
 
-Max 500 characters (this is 461). Re-count after any edit.
+Max 500 characters (this is 459). Re-count after any edit.
 
 ```
 No account needed.
 1. Click the mathslop toolbar icon (pin it from the puzzle menu). The side panel opens with sample lines.
-2. Click Arithmetic, then Enable answers. Expect 5, 2, 5050, 1/2 = 0.5, 0 and 10.
+2. Click Arithmetic, then Show results. Expect 5, 2, 5050, 1/2 = 0.5, 0 and 10.
 3. Click Algebra: d/dx x^3 shows 3x^2.
 
 The engine runs in sandbox.html (manifest "sandbox") because Compute Engine uses new Function. It has no chrome.* APIs and its CSP blocks all network. Both libraries are unmodified npm builds; nothing remote loads.

@@ -1,4 +1,4 @@
-// engine/lines: which names := may give a value to (CLAUDE.md "Answers modes").
+// engine/lines: which names := may give a value to (CLAUDE.md "Evaluate modes").
 import { describe, after } from 'node:test';
 import { subjects } from './subjects.mjs';
 import { rows, A } from './rows.mjs';
