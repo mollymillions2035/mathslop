@@ -286,7 +286,8 @@ npm run fuzz          optional: engine fuzzing, hostile LaTeX, a monkey test, th
   cancels the older run), with the latest **stable** Chrome for Testing from `@puppeteer/browsers` (downloaded
   on the runner, not a dependency) and the latest **LTS** Node from `mise.toml`. The target is always Chrome stable,
   because that's what users have (Chrome updates itself): a red weekly run with no code change is a real
-  compatibility bug, not CI noise, and so is one after a new Node LTS (a critical one). Schedules
+  compatibility bug, not CI noise, and so is one after a new Node LTS (a critical one). The runner is `ubuntu-latest`, never
+  a pinned image: a run that breaks on a newer image or its newer tools is a mathslop bug too. Schedules
   only run from the default branch, and GitHub turns a public repo's scheduled workflows off after 60 days with
   no repository activity; then re-enable it from the Actions tab. `CHROMIUM_FLAGS` passes extra flags
   (`--no-sandbox` there), and `CHROMIUM_LOG=dir` keeps each browser's stderr.
