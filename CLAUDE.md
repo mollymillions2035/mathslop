@@ -7,22 +7,17 @@ Manifest V3, no build step, no network access at runtime — every library is ve
 
 Rough priority order.
 
-1. **Use the browser's math font.** Reported 2026-10-27: if the browser has a math font set, the pad should
-      use it, but the lines look monospace. MathLive draws math with its bundled KaTeX fonts (`vendor/mathlive/fonts`,
-      `@font-face` in mathlive-static.css, `fontsDirectory = null` in panel.js), not CSS `font-family: math`, so
-      the browser's setting doesn't reach it as things stand. First check what a line actually renders with
-      (DevTools → Computed → Rendered Fonts): monospace there would mean the KaTeX fonts aren't loading.
-2. **Multiple pads** (named tabs). Storage becomes `{ pads: [...] }`, so bump to `mathslop.v2` with a
+1. **Multiple pads** (named tabs). Storage becomes `{ pads: [...] }`, so bump to `mathslop.v2` with a
       migration from `v1` (see "Renaming / moving the folder").
-3. **Hostile-input and fuzz findings** (`npm run fuzz`, test/fuzz/; first runs on 1.3.0). Nothing ran, navigated or
+2. **Hostile-input and fuzz findings** (`npm run fuzz`, test/fuzz/; first runs on 1.3.0). Nothing ran, navigated or
       reached the network for any payload. Open:
       - 300 nested `\sqrt{…}` hang the panel itself (MathLive's rendering, > 60 s).
       - `\href{javascript:…}` and a 200 000-character line throw into the console (MathLive "Invalid URL", stack
         overflow); the panel survives both.
       The engine fuzzer and the monkey test found nothing over several seeds.
-4. **Plotting — possible future enhancement, not planned.** New `type: 'plot'` in sandbox.js using `compile()`
+3. **Plotting — possible future enhancement, not planned.** New `type: 'plot'` in sandbox.js using `compile()`
       to sample points, returning number arrays; draw on a `<canvas>` in the panel. The reason CE lives in the sandbox in the first place.
-5. **Units in equations (5 km + 300 m, km/h → m/s) — possible future enhancement, on hold** while deciding whether and how units should work at
+4. **Units in equations (5 km + 300 m, km/h → m/s) — possible future enhancement, on hold** while deciding whether and how units should work at
       all. A working attempt is on the local branch `units-experiment` (not pushed). What it found: CE 0.161 reads `5\,\mathrm{km}` and
       `5\text{km/h}` as `Quantity`, but MathLive's own unit shortcuts write `\operatorname{km}`, which CE reads as
       a variable; single-letter units (m, s, g, h) can't be told apart from variables while typing; CE's `\to`
