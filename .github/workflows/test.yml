@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      # actions/checkout runs git init; without a default branch set, git prints a hint about it
+      - run: git config --global init.defaultBranch main
       - uses: actions/checkout@v7
         with:
           persist-credentials: false   # nothing here pushes

@@ -26,6 +26,9 @@ jobs:
       id-token: write
 
     steps:
+      - name: Set git's default branch   # quiets git init's hint in actions/checkout
+        run: git config --global init.defaultBranch main
+
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
